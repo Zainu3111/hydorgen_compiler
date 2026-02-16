@@ -1,4 +1,4 @@
-**HYDROGEN**
+# HYDROGEN
   Hydrogen is a Compiler that compiles a subset of C to Risc-v.
 
 **GOALS**
