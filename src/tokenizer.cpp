@@ -1,52 +1,64 @@
 #include <iostream>
 #include "tokenizer.h"
+#include <cstdlib>
 
+Tokenizer::Tokenizer(std::string_view s)
+	: m_src(s),
+	  m_ind(0)
+{}
 
-std::vector<Token> Tokenizer::tokenize(std::string_view str){
+std::vector<Token> Tokenizer::tokenize(){
 	std::vector<Token> tokens;
 	std::string buf;
-	size_t str_len = str.length();
-	size_t i{};
- 	while(i < str_len){
- 		if (std::isalpha(static_cast<unsigned char>(str[i]))){ // loop to build a name or a keyword
- 			while(i < str_len && std::isalpha(static_cast<unsigned char>(str[i]))){
-				buf.push_back(str[i]);
-				++i;
+ 	while(peek().has_value()){
+ 		if (std::isalpha(static_cast<unsigned char>(peek().value()))){
+			 // loop to build a name or a keyword
+ 			while(peek().has_value() && std::isalpha(static_cast<unsigned char>(peek().value()))){
+				buf.push_back(consume());
 			}
 			if (buf == "return"){
 				tokens.push_back({.type = TokenType::_return});
 				std::cout << buf << std::endl;
-				buf = "";
+				buf.clear();
 			}else{
-				continue;
+				std::cerr << "You messed up. Not a keyword" << std::endl;
+				exit(EXIT_FAILURE);
 			}
-		}else if (std::isdigit(static_cast<unsigned char>(str[i]))){ // loop to build a str for val
-			while(i < str_len && std::isdigit(static_cast<unsigned char>(str[i]))){
-				buf.push_back(str[i]);
-				++i;
+		}else if (std::isdigit(static_cast<unsigned char>(peek().value()))){
+			 // loop to build a num for val
+			while(peek().has_value() && std::isdigit(static_cast<unsigned char>(peek().value()))){
+				buf.push_back(consume());
 				}
 			tokens.push_back({.type = TokenType::int_lit, .value=buf});
 			std::cout << buf << std::endl;
-			buf = "";
-		}else if(str[i] == ';'){
+			buf.clear();
+		}else if(peek().value() == ';'){
+			consume();
 			tokens.push_back({.type = TokenType::semi});
-			++i;
-		}else{ // increment in case of whitespace
-			++i;
+		}else if (std::isspace(static_cast<unsigned char>(peek().value()))){ 
+			// increment in case of whitespace
+			consume();
+		}else{
+			std::cerr << "You messed up" << std::endl;
 		}
 	}
 	std::cout << "Done with the Line" << std::endl;
+	m_ind = 0;
 	return tokens;
 }
 
 
 
-std::optional<char> Tokenizer::peek() const{
-	if (m_ind + 1 >= m_src.length()){
-		return {}
+std::optional<char> Tokenizer::peek(int ahead) const{
+	if (m_ind >= m_src.length()){
+		return {};
 	}else{
-		return m_src[m_ind + 1]
+		return m_src[m_ind];
 	}
+}
+
+char Tokenizer::consume(){
+	return m_src[m_ind++];
 }
 
 

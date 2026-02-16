@@ -37,8 +37,11 @@ int main(int argc, char* argv[]){
 	std:: string line;
 	while(std::getline(input, line)){
 		std::cout << line << std::endl;
-		//std::string_view = view(line);
-		std::vector<Token> tokens = tokenize(line);
+	
+		// create tokens
+		Tokenizer tokenizer = Tokenizer(line);
+		std::vector<Token> tokens = tokenizer.tokenize();
+		std::cout<<"debugging"<<std::endl;
 //		output << line;
 	}
 	return EXIT_SUCCESS;
