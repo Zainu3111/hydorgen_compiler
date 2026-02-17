@@ -1,4 +1,4 @@
-#ifndef HYDEOGEN_TOKENIZATION_HPP
+#ifndef HYDROGEN_TOKENIZATION_HPP
 #define HYDROGEN_TOKENIZATION_HPP
 
 #include <vector>
@@ -32,7 +32,7 @@ private:
 	const std::string_view m_src;
 
 	// cur index of char that is being tokenized
-	int m_ind{};
+	size_t m_ind{};
 	
 	// peek is to check if there is another char and what is it, [[nodiscard]] so we 
 	// can get an error in case we accidentally call it and not use it
@@ -41,18 +41,6 @@ private:
 	// consume returns a char at index i and increment it
 	char consume();
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif

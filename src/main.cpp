@@ -5,7 +5,8 @@
 #include <optional>
 #include <vector>
 #include "tokenizer.h"
-
+#include "parser.h"
+#include "codegen.h"
 
 
 int main(int argc, char* argv[]){	
@@ -27,22 +28,32 @@ int main(int argc, char* argv[]){
 
 	// making an output file
 
-/*	std::ofstream output("./tests/translate.s");
+	std::ofstream output("./../tests/translate.s");
 	if (!output){
-		std::cerr << "Could not build an executable." << std::endl;
+		std::cerr << "Could not open a file." << std::endl;
 		return EXIT_FAILURE;
 	}
-*/
 
-	std:: string line;
+
+	std::string line;
 	while(std::getline(input, line)){
 		std::cout << line << std::endl;
 	
 		// create tokens
 		Tokenizer tokenizer = Tokenizer(line);
 		std::vector<Token> tokens = tokenizer.tokenize();
-		std::cout<<"debugging"<<std::endl;
-//		output << line;
+		std::cout << "checking" << std::endl;
+		Parser parser(tokens);
+		std::cout << "trying" << std::endl;
+		std::optional<NodeReturn> tree = parser.parse();
+		if (!tree.has_value()){
+			std::cerr << "No Return Statement Found" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		Generator generator = Generator(tree.value());
+
+		//	std::cout<<"debugging"<<std::endl;
+		output << generator.generate() ;
 	}
 	return EXIT_SUCCESS;
 }
