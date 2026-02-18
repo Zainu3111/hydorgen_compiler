@@ -10,7 +10,10 @@
 enum class TokenType {
 	_return,
 	int_lit,
-	semi
+	semi,
+	open_paran,
+	close_paren,
+	ident
 };
 
 // Token, what is the type and val of the token
@@ -36,7 +39,7 @@ private:
 	
 	// peek is to check if there is another char and what is it, [[nodiscard]] so we 
 	// can get an error in case we accidentally call it and not use it
-	[[nodiscard]] std::optional<char> peek(int ahead = 1) const;
+	[[nodiscard]] std::optional<char> peek(int offset = 0) const;
 
 	// consume returns a char at index i and increment it
 	char consume();

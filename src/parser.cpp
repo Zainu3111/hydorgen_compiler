@@ -9,11 +9,11 @@ Parser::Parser(std::vector<Token> tokens)
 }
 
 
-std::optional<Token> Parser::peek(size_t ahead) const{
-	if (m_ind >= m_tokens.size()){
+std::optional<Token> Parser::peek(size_t offset) const{
+	if ((m_ind + offset) >= m_tokens.size()){
 		return {};
 	}else{
-		return m_tokens[m_ind];
+		return m_tokens[m_ind + offset];
 	}
 }
 
@@ -24,12 +24,22 @@ Token Parser::consume(){
 std::optional<NodeExpr> Parser::parse_expr(){
 	if(peek().has_value() && peek().value().type == TokenType::int_lit){
 		return NodeExpr{
-			.int_lit = consume()
+			.var = NodeExprIntLit {.int_lit = consume()}
+		};
+	}else if(peek().has_value() && peek().value().type == TokenType::ident){
+		return NodeExpr{
+			.var = NodeExprIdent{.ident = consume()}
 		};
 	}else{
 		return {};
 	}
 };
+
+
+std::optional<NodeStatement> parse_statement(){
+	
+}
+
 
 	
 std::optional<NodeReturn> Parser::parse(){
@@ -43,6 +53,7 @@ std::optional<NodeReturn> Parser::parse(){
 				node_return = NodeReturn{
 					.expr = node_expr.value()
 				};
+			
 			}else{
 				std::cerr << "Invalid Expression" << std::endl;
 				exit(EXIT_FAILURE);

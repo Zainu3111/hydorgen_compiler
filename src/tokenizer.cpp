@@ -32,6 +32,12 @@ std::vector<Token> Tokenizer::tokenize(){
 			tokens.push_back({.type = TokenType::int_lit, .value=buf});
 			std::cout << buf << std::endl;
 			buf.clear();
+		}else if(peek().value() == '('){
+			consume();
+			tokens.push_back({.type = TokenType::open_paren});
+		}else if(peek().value() == ')'){
+			consume();
+			tokens.push_back({.type = TokenType::close_paren});
 		}else if(peek().value() == ';'){
 			consume();
 			tokens.push_back({.type = TokenType::semi});
@@ -39,7 +45,8 @@ std::vector<Token> Tokenizer::tokenize(){
 			// increment in case of whitespace
 			consume();
 		}else{
-			std::cerr << "You messed up" << std::endl;
+			tokens.push_back({.type = TokenType::ident, .value = buf});
+			buf.clear()
 		}
 	}
 	std::cout << "Done with the Line" << std::endl;
@@ -49,11 +56,11 @@ std::vector<Token> Tokenizer::tokenize(){
 
 
 
-std::optional<char> Tokenizer::peek(int ahead) const{
-	if (m_ind >= m_src.length()){
+std::optional<char> Tokenizer::peek(int offset) const{
+	if (m_ind + offset >= m_src.length()){
 		return {};
 	}else{
-		return m_src[m_ind];
+		return m_src[m_ind + offset];
 	}
 }
 

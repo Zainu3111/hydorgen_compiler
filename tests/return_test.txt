@@ -1,1 +1,2 @@
-return 69;
+int x = 69;
+return 67;
