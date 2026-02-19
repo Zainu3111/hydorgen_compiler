@@ -14,7 +14,7 @@ enum class TokenType {
 	open_paren,
 	close_paren,
 	ident,
-	declr,
+	eq,
 	_int
 };
 

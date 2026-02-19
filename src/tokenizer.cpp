@@ -16,9 +16,12 @@ std::vector<Token> Tokenizer::tokenize(){
  			while(peek().has_value() && std::isalpha(static_cast<unsigned char>(peek().value()))){
 				buf.push_back(consume());
 			}
+			std::cout << buf << std::endl;
 			if (buf == "return"){
 				tokens.push_back({.type = TokenType::_return});
-				std::cout << buf << std::endl;
+				buf.clear();
+			}else if(buf == "int"){
+				tokens.push_back({.type = TokenType::_int});
 				buf.clear();
 			}else{
 				std::cerr << "You messed up. Not a keyword" << std::endl;
@@ -32,6 +35,9 @@ std::vector<Token> Tokenizer::tokenize(){
 			tokens.push_back({.type = TokenType::int_lit, .value=buf});
 			std::cout << buf << std::endl;
 			buf.clear();
+		}else if(peek().value() == '='){
+			consume();
+			tokens.push_back({.type = TokenType::eq});
 		}else if(peek().value() == '('){
 			consume();
 			tokens.push_back({.type = TokenType::open_paren});
