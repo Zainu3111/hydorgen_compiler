@@ -46,7 +46,7 @@ std::vector<Token> Tokenizer::tokenize(){
 			consume();
 		}else{
 			tokens.push_back({.type = TokenType::ident, .value = buf});
-			buf.clear()
+			buf.clear();
 		}
 	}
 	std::cout << "Done with the Line" << std::endl;

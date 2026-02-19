@@ -37,7 +37,23 @@ std::optional<NodeExpr> Parser::parse_expr(){
 
 
 std::optional<NodeStatement> parse_statement(){
-	
+	if(peek().has_value() && peek().value().type == TokenType::_return){
+		consume();
+		auto node_return = NodeStatement{
+			.stmt = NodeStatementReturn
+		};
+		if (auto node_expr = parse_expr()){
+			node_return = {.expr = node_expr.value()}
+		}else{
+			std::cerr << "Not a Valid expression" << std::endl;
+		}
+	}else if(peek().has_value() && peek().value() == TokenType::semi){
+		consume();
+		exit(EXIT_FAILURE);
+	}else{
+		std::cerr << "Invalid Expression 2" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 

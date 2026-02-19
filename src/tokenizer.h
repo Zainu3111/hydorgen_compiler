@@ -11,9 +11,11 @@ enum class TokenType {
 	_return,
 	int_lit,
 	semi,
-	open_paran,
+	open_paren,
 	close_paren,
-	ident
+	ident,
+	declr,
+	_int
 };
 
 // Token, what is the type and val of the token
