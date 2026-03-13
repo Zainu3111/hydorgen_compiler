@@ -25,11 +25,11 @@ Token Parser::consume(){
 }
 
 std::optional<node::expr> Parser::parse_expr(){
-	if(peek().has_value() && peek().value().type == TokenType::int_lit){
+	if(check(TokenType::int_lit)){
 		return node::expr{
 			.var = node::exprIntLit {.int_lit = consume()}
 		};
-	}else if(peek().has_value() && peek().value().type == TokenType::ident){
+	}else if(check(TokenType::ident)){
 		return node::expr{
 			.var = node::exprIdent{.ident = consume()}
 		};
@@ -41,7 +41,7 @@ std::optional<node::expr> Parser::parse_expr(){
 
 std::optional<node::statement> Parser::parse_statement(){
 	node::statementReturn stmt_return;
-	if(peek().has_value() && peek().value().type == TokenType::_return){
+	if(check(TokenType::_return)){
 		node::statementReturn stmt_return;
 		consume();
 		// check for an expression
@@ -52,31 +52,32 @@ std::optional<node::statement> Parser::parse_statement(){
 			exit(EXIT_FAILURE);
 		}
 		// check for a semi colon
-		if(peek().has_value() && peek().value().type == TokenType::semi){
+		if(check(TokenType::semi)){
 			consume();
 		}else {
 			std::cerr << "Requires a semi-colon" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		return node::statement{.stmt = stmt_return};
-	}else if (peek().has_value() && peek().value().type == TokenType::_int){
+
+	}else if (check(TokenType::_int)){
 		consume();
 		node::statementDeclaration stmt_dec;
 	// TODO: Please add the required stuff.	
-		if(peek().has_value() && peek().value().type == TokenType::ident){
+		if(check(TokenType::ident)){
 			stmt_dec.ident = consume();
 		}else{
 			std::cerr << "Declaration without identifier" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
-		if(peek().has_value() && peek().value().type == TokenType::eq){
+		if(check(TokenType::eq)){
 			consume();
 		}else{
 			std::cerr << "Declaration needs an = sign" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		if(peek().has_value() && peek().value().type == TokenType::int_lit){
+		if(check(TokenType::int_lit)){
 			stmt_dec.expr.var = node::exprIntLit {.int_lit = consume()};
 		}else{
 			std::cerr << "No Declarations without values allowed" << std::endl;
