@@ -29,8 +29,8 @@ private:
 
 	const std::vector<Token> m_tokens;
 	size_t m_ind{};
-
-
+	
+	bool check(TokenType);
 };
 
 

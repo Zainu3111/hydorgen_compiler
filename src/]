@@ -8,9 +8,6 @@ Parser::Parser(std::vector<Token> tokens)
 	
 }
 
-bool Parser::check(TokenType type){
-	return peek().has_value() && peek().value().type == type;
-}
 
 std::optional<Token> Parser::peek(size_t offset) const{
 	if ((m_ind + offset) >= m_tokens.size()){
