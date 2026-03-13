@@ -24,8 +24,8 @@ std::vector<Token> Tokenizer::tokenize(){
 				tokens.push_back({.type = TokenType::_int});
 				buf.clear();
 			}else{
-				std::cerr << "You messed up. Not a keyword" << std::endl;
-				exit(EXIT_FAILURE);
+			tokens.push_back({.type = TokenType::ident, .value = buf});
+			buf.clear();
 			}
 		}else if (std::isdigit(static_cast<unsigned char>(peek().value()))){
 			 // loop to build a num for val
@@ -51,8 +51,7 @@ std::vector<Token> Tokenizer::tokenize(){
 			// increment in case of whitespace
 			consume();
 		}else{
-			tokens.push_back({.type = TokenType::ident, .value = buf});
-			buf.clear();
+			consume();
 		}
 	}
 	std::cout << "Done with the Line" << std::endl;
@@ -73,19 +72,4 @@ std::optional<char> Tokenizer::peek(int offset) const{
 char Tokenizer::consume(){
 	return m_src[m_ind++];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

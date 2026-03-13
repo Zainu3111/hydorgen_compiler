@@ -3,13 +3,14 @@
 
 #include <iostream>
 #include "parser.h"
+#include "node.h"
 class Generator{
 	public:
-		Generator(NodeReturn);
+		Generator(node::statementReturn);
 
 		[[nodiscard]] std::string generate () const;
 	private:
-		const NodeReturn m_root;
+		const node::statementReturn m_root;
 
 };
 

@@ -21,14 +21,6 @@ namespace node {
 		expr expr;
 	};
 
-	struct _int{
-		int val;
-	};
-
-	struct variableDeclaration{
-		std::variant<_int> literal;
-	};
-
 	struct statementDeclaration{
 		Token ident;
 		expr expr;

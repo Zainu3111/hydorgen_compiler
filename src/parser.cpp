@@ -21,14 +21,14 @@ Token Parser::consume(){
 	return m_tokens[m_ind++];
 }
 
-std::optional<NodeExpr> Parser::parse_expr(){
+std::optional<node::expr> Parser::parse_expr(){
 	if(peek().has_value() && peek().value().type == TokenType::int_lit){
-		return NodeExpr{
-			.var = NodeExprIntLit {.int_lit = consume()}
+		return node::expr{
+			.var = node::exprIntLit {.int_lit = consume()}
 		};
 	}else if(peek().has_value() && peek().value().type == TokenType::ident){
-		return NodeExpr{
-			.var = NodeExprIdent{.ident = consume()}
+		return node::expr{
+			.var = node::exprIdent{.ident = consume()}
 		};
 	}else{
 		return {};
@@ -36,52 +36,49 @@ std::optional<NodeExpr> Parser::parse_expr(){
 };
 
 
-std::optional<NodeStatement> parse_statement(){
+std::optional<node::statement> Parser::parse_statement(){
+	node::statementReturn stmt_return;
 	if(peek().has_value() && peek().value().type == TokenType::_return){
+		node::statementReturn stmt_return;
 		consume();
-		auto node_return = NodeStatement{
-			.stmt = NodeStatementReturn
-		};
+		// check for an expression
 		if (auto node_expr = parse_expr()){
-			node_return = {.expr = node_expr.value()}
+			stmt_return.expr = node_expr.value();
 		}else{
 			std::cerr << "Not a Valid expression" << std::endl;
+			exit(EXIT_FAILURE);
 		}
-	}else if(peek().has_value() && peek().value() == TokenType::semi){
+		// check for a semi colon
+		if(peek().has_value() && peek().value().type == TokenType::semi){
+			consume();
+		}else {
+			std::cerr << "Requires a semi-colon" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		return node::statement{.stmt = stmt_return};
+	}else if (peek().has_value() && peek().value().type == TokenType::_int){
 		consume();
-		exit(EXIT_FAILURE);
-	}else{
-		std::cerr << "Invalid Expression 2" << std::endl;
-		exit(EXIT_FAILURE);
+	// TODO: Please add the required stuff.	
+		if(peek().has_value() && peek().value().type == TokenType::ident){
+		}else{
+			std::cerr << "Declaration without identifier" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		if(peek().has_value() && peek().value().type == TokenType::eq){
+		}else{
+			std::cerr << "Declaration needs an = sign" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		if(peek().has_value() && peek().value().type == TokenType::int_lit){
+		}else{
+			std::cerr << "No Declarations without values allowed" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		
 	}
+	return {};
 }
 
 
 	
-std::optional<NodeReturn> Parser::parse(){
-	std::optional<NodeReturn> node_return;
-	while(peek().has_value()){
-		std::cout << "checking" << std::endl; 
-		if (peek().value().type == TokenType::_return){
-			consume();
-			if(auto node_expr = parse_expr()){
-				std::cout << "Found Return" << std::endl;
-				node_return = NodeReturn{
-					.expr = node_expr.value()
-				};
-			
-			}else{
-				std::cerr << "Invalid Expression" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-			if(peek().has_value() && peek().value().type == TokenType::semi){
-				consume();
-			}else{
-				std::cerr << "Invalid Expression" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-	m_ind = 0;
-	return node_return;
-	}

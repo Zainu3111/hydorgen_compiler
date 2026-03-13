@@ -12,25 +12,26 @@ class Parser{
 public:
 	Parser(std::vector<Token>);
 
+	std::optional<node::expr> parse_expr();
+
 	std::optional<node::statementReturn> parse();
 
-	std::optional<node::expr> parse_expr();
 
 	std::optional<node::statement> parse_statement();
 private:
-	const std::vector<Token> m_tokens;
-	size_t m_ind{};
+
+	// consume returns a char at index i and increment it
+	Token consume();
 
 	// peek is to check if there is another char and what is it, [[nodiscard]] so we 
 	// can get an error in case we accidentally call it and not use it
 	[[nodiscard]] std::optional<Token> peek(size_t offset = 0) const;
 
-	// consume returns a char at index i and increment it
-	Token consume();
+	const std::vector<Token> m_tokens;
+	size_t m_ind{};
+
 
 };
-
-
 
 
 #endif
