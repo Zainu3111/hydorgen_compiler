@@ -18,6 +18,9 @@ public:
 
 
 	std::optional<node::statement> parse_statement();
+
+	std::optional<node::prog> parse_prog();
+
 private:
 
 	// consume returns a char at index i and increment it

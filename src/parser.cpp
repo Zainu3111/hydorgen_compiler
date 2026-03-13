@@ -63,7 +63,7 @@ std::optional<node::statement> Parser::parse_statement(){
 	}else if (check(TokenType::_int)){
 		consume();
 		node::statementDeclaration stmt_dec;
-	// TODO: Please add the required stuff.	
+		
 		if(check(TokenType::ident)){
 			stmt_dec.ident = consume();
 		}else{
@@ -77,16 +77,27 @@ std::optional<node::statement> Parser::parse_statement(){
 			std::cerr << "Declaration needs an = sign" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		if(check(TokenType::int_lit)){
-			stmt_dec.expr.var = node::exprIntLit {.int_lit = consume()};
+		if(auto node_expr = parse_expr()){
+			stmt_dec.expr = node_expr.value();
 		}else{
-			std::cerr << "No Declarations without values allowed" << std::endl;
+			std::cerr << "Invalid Expression" << std::endl;
 			exit(EXIT_FAILURE);
 		}
+
+		if(check(TokenType::semi)){
+			consume();
+		}else {
+			std::cerr << "Requires a semi-colon" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
 		return node::statement{.stmt = stmt_dec};
 	}
 	return {};
 }
 
-
+std::optional<node::prog> parse_prog(){
+	//TODO: add functionality
+	return node::prog{};
+}
 	
