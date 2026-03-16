@@ -96,8 +96,17 @@ std::optional<node::statement> Parser::parse_statement(){
 	return {};
 }
 
-std::optional<node::prog> parse_prog(){
+std::optional<node::prog> Parser::parse_prog(){
 	//TODO: add functionality
+	node::prog prog;
+	while (peek().has_value()){
+		if (auto stmt = parse_statement()){
+			prog.stmts.push_back(stmt.value());
+		} else {
+			std::cerr << "Invalid Statement expression" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
 	return node::prog{};
 }
 	
