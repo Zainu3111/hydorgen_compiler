@@ -6,11 +6,13 @@
 #include "node.h"
 class Generator{
 	public:
-		Generator(node::statementReturn);
+		Generator(node::prog);
 
-		[[nodiscard]] std::string generate () const;
+		[[nodiscard]] std::string gen_prog () const;
+
+		[[nodiscard]] std::string gen_statement (const node::statement) const;
 	private:
-		const node::statementReturn m_root;
+		const node::prog m_prog;
 
 };
 
