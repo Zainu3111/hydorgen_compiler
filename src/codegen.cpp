@@ -28,11 +28,16 @@ void Generator::gen_statement(const node::statement& stmt){
 	struct StmtVisitor {
 		Generator* gen;
 
-		void operator()(const node::statementReturn& stmt_ret){
-			gen_expr(stmt_ret.expr);
-			gen->m_output << "		li a0, 0\n";
-			gen->m_output << "		li a7, "; //TODO:
-			gen->m_output << "		ecall\n";
+			void operator()(const node::statementReturn& stmt_ret){
+				gen->gen_expr(stmt_ret.expr);
+				gen->m_output << "		addi sp, sp, -8\n";
+				gen->m_output << "		ld a0, 0(sp)\n";
+				gen->m_output << "		li a7, 1\n";
+				gen->m_output << "		ecall\n";
+				gen->m_output << "		li a0, 0\n";
+				gen->m_output << "		li a7, 10\n";
+				gen->m_output << "		ecall";
+
 		}
 		void operator()(const node::statementDeclaration& stmt_dec){
 			
