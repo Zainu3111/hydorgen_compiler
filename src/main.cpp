@@ -32,26 +32,28 @@ int main(int argc, char* argv[]){
 		return EXIT_FAILURE;
 	}
 
-
-	std::string line;
-	while(std::getline(input, line)){
-		std::cout << line << std::endl;
+	std::string source(
+		(std::istreambuf_iterator<char>(input)),
+		std::istreambuf_iterator<char>()
+	);
 	
-		// create tokens
-		Tokenizer tokenizer = Tokenizer(line);
-		std::vector<Token> tokens = tokenizer.tokenize();
-		std::cout << "checking" << std::endl;
-		Parser parser(tokens);
-		std::cout << "trying" << std::endl;
-		std::optional<node::statementReturn> tree = parser.parse();
-		if (!tree.has_value()){
-			std::cerr << "No Return Statement Found" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		Generator generator = Generator(tree.value());
-
-		//	std::cout<<"debugging"<<std::endl;
-		output << generator.generate() ;
+	// create tokens
+	Tokenizer tokenizer = Tokenizer(source);
+	std::vector<Token> tokens = tokenizer.tokenize();
+	std::cout << "checking" << std::endl;
+	// tokens is now a vector of tokens
+	
+	Parser parser(tokens);
+	std::cout << "trying" << std::endl;
+	std::optional<node::prog> tree = parser.parse_prog();
+	if (!tree.has_value()){
+		std::cerr << "No Statement Found" << std::endl;
+		exit(EXIT_FAILURE);
 	}
+	Generator generator = Generator(tree.value());
+
+	//	std::cout<<"debugging"<<std::endl;
+	output << generator.gen_prog() ;
+
 	return EXIT_SUCCESS;
 }

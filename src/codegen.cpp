@@ -34,9 +34,6 @@ void Generator::gen_statement(const node::statement& stmt){
 				gen->m_output << "		ld a0, 0(sp)\n";
 				gen->m_output << "		li a7, 1\n";
 				gen->m_output << "		ecall\n";
-				gen->m_output << "		li a0, 0\n";
-				gen->m_output << "		li a7, 10\n";
-				gen->m_output << "		ecall";
 
 		}
 		void operator()(const node::statementDeclaration& stmt_dec){
@@ -52,11 +49,8 @@ std::string Generator::gen_prog(){
 	m_output << "		.global main\nmain:\n";
 	
 	for(const node::statement stmt : m_prog.stmts){
-	m_output << gen_statement(stmt);
+		gen_statement(stmt);
 	}
-
-
-
 
 	m_output << "		li a0, 0\n";
 	m_output << "		li a7, 1\n";
