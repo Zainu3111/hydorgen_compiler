@@ -14,9 +14,9 @@ void Generator::gen_expr(const node::expr& expr){
 
 		void operator()(const node::exprIntLit& expr_int_lit){
 			gen->m_output << "		li t0, " << expr_int_lit.int_lit.value.value() << "\n";
-			gen->m_output << "		lw t0, 0(sp)\n";
-			gen->m_output << "		add sp, sp, 8\n";
-			std::cout << "it should work" << std::endl;
+			gen->m_output << "		sw t0, 0(sp)\n";
+			gen->m_output << "		addi sp, sp, -8\n";
+//			std::cout << "it should work" << std::endl;
 		}
 		void operator()(const node::exprIdent& expr_iden){
 		//TODO	
@@ -33,7 +33,7 @@ void Generator::gen_statement(const node::statement& stmt){
 
 		void operator()(const node::statementReturn& stmt_ret){
 			gen->gen_expr(stmt_ret.expression);
-			gen->m_output << "		addi sp, sp, -8\n";
+			gen->m_output << "		addi sp, sp, 8\n";
 			gen->m_output << "		lw a0, 0(sp)\n";
 			gen->m_output << "		li a7, 1\n";
 			gen->m_output << "		ecall\n";
@@ -51,18 +51,11 @@ void Generator::gen_statement(const node::statement& stmt){
 std::string Generator::gen_prog(){
 	m_output << "		.global main\nmain:\n";
 	
-	std::cout << "start codegen" << std::endl;
+//	std::cout << "start codegen" << std::endl;
 
 	for(const node::statement stmt : m_prog.stmts){
 		gen_statement(stmt);
-		std::cout << "calling gen_statement" << std::endl;
+//	std::cout << "calling gen_statement" << std::endl;
 	}
-	//m_output << "Yeeeehawwwww\n";
-	m_output << "		li a0, 0\n";
-	m_output << "		li a7, 1\n";
-	m_output << "		ecall\n";
-	m_output << "		li a0, 0\n";
-	m_output << "		li a7, 10\n";
-	m_output << "		ecall";
 	return m_output.str();
 }
