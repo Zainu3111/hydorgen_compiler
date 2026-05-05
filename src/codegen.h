@@ -9,7 +9,7 @@ class Generator{
 	public:
 		Generator(node::prog);
 
-		[[nodiscard]] std::string gen_prog ();
+		std::string gen_prog ();
 
 		void gen_statement (const node::statement&);
 

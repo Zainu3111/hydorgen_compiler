@@ -46,7 +46,7 @@ std::optional<node::statement> Parser::parse_statement(){
 		consume();
 		// check for an expression
 		if (auto node_expr = parse_expr()){
-			stmt_return.expr = node_expr.value();
+			stmt_return.expression = node_expr.value();
 		}else{
 			std::cerr << "Not a Valid expression" << std::endl;
 			exit(EXIT_FAILURE);
@@ -78,7 +78,7 @@ std::optional<node::statement> Parser::parse_statement(){
 			exit(EXIT_FAILURE);
 		}
 		if(auto node_expr = parse_expr()){
-			stmt_dec.expr = node_expr.value();
+			stmt_dec.expression = node_expr.value();
 		}else{
 			std::cerr << "Invalid Expression" << std::endl;
 			exit(EXIT_FAILURE);
@@ -107,6 +107,6 @@ std::optional<node::prog> Parser::parse_prog(){
 			exit(EXIT_FAILURE);
 		}
 	}
-	return node::prog{};
+	return prog;
 }
 	

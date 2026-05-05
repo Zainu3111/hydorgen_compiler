@@ -40,7 +40,8 @@ int main(int argc, char* argv[]){
 	// create tokens
 	Tokenizer tokenizer = Tokenizer(source);
 	std::vector<Token> tokens = tokenizer.tokenize();
-	std::cout << "checking" << std::endl;
+	
+	//std::cout << "checking" << std::endl;
 	// tokens is now a vector of tokens
 	
 	Parser parser(tokens);

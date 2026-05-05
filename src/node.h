@@ -18,12 +18,12 @@ namespace node {
 	};
 
 	struct statementReturn{
-		expr expr;
+		expr expression;
 	};
 
 	struct statementDeclaration{
 		Token ident;
-		expr expr;
+		expr expression;
 	};
 
 	struct statement{
