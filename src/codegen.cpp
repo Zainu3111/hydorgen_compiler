@@ -10,12 +10,12 @@ Generator::Generator(node::prog prog)
 
 void Generator::push(const std::string& reg){ 
 	m_output << "		sw " << reg << ", 0(sp)\n"; 
-	m_output << "		addi sp, sp, 8\n";
+	m_output << "		addi sp, sp, -8\n";
 	++m_stack_size;
 }
 
 void Generator::pop(const std::string& reg){
-	m_output << "		addi sp, sp, -8\n";
+	m_output << "		addi sp, sp, 8\n";
 	m_output << "		lw " << reg << ", 0(sp)\n";
 	--m_stack_size;
 }
@@ -36,9 +36,9 @@ void Generator::gen_expr(const node::expr& expr){
 				std::cerr << "Variable " << expr_iden.ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			int loc = gen->m_vars.at(expr_iden.ident.value.value()).stack_location - gen->m_stack_size;
-			loc = loc * -8;
-			gen->m_output << "		ld t0, " << std::to_string(loc) << "(sp)\n";
+			int loc = gen->m_stack_size - gen->m_vars.at(expr_iden.ident.value.value()).stack_location;
+			loc = loc * 8;
+			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
 			gen->push("t0");
 		}
 	};
