@@ -36,7 +36,10 @@ void Generator::gen_expr(const node::expr& expr){
 				std::cerr << "Variable " << expr_iden.ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			
+			int loc = gen->m_vars.at(expr_iden.ident.value.value()).stack_location - gen->m_stack_size;
+			loc = loc * -8;
+			gen->m_output << "		ld t0, " << std::to_string(loc) << "(sp)\n";
+			gen->push("t0");
 		}
 	};
 	ExprVisitor visitor{.gen = this};
