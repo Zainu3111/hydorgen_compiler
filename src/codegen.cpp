@@ -1,10 +1,23 @@
 #include "codegen.h"
 #include <string>
 #include <sstream>
+
 Generator::Generator(node::prog prog)
 	: m_prog(std::move(prog))
 {
 
+}
+
+void Generator::push(const std::string& reg){ 
+	m_output << "		sw " << reg << ", 0(sp)\n"; 
+	m_output << "		addi sp, sp, 8\n";
+	++m_stack_size;
+}
+
+void Generator::pop(const std::string& reg){
+	m_output << "		addi sp, sp, -8\n";
+	m_output << "		lw " << reg << ", 0(sp)\n";
+	--m_stack_size;
 }
 
 void Generator::gen_expr(const node::expr& expr){
@@ -14,12 +27,16 @@ void Generator::gen_expr(const node::expr& expr){
 
 		void operator()(const node::exprIntLit& expr_int_lit){
 			gen->m_output << "		li t0, " << expr_int_lit.int_lit.value.value() << "\n";
-			gen->m_output << "		sw t0, 0(sp)\n";
-			gen->m_output << "		addi sp, sp, -8\n";
+			gen->push("t0");
 //			std::cout << "it should work" << std::endl;
 		}
 		void operator()(const node::exprIdent& expr_iden){
 		//TODO	
+			if (!gen->m_vars.contains(expr_iden.ident.value.value())){
+				std::cerr << "Variable " << expr_iden.ident.value.value() << " does not exit." << std::endl;
+				exit(EXIT_FAILURE);
+			}
+			
 		}
 	};
 	ExprVisitor visitor{.gen = this};
@@ -33,14 +50,19 @@ void Generator::gen_statement(const node::statement& stmt){
 
 		void operator()(const node::statementReturn& stmt_ret){
 			gen->gen_expr(stmt_ret.expression);
-			gen->m_output << "		addi sp, sp, 8\n";
-			gen->m_output << "		lw a0, 0(sp)\n";
+			gen->pop("a0");
 			gen->m_output << "		li a7, 1\n";
 			gen->m_output << "		ecall\n";
 		}
 
 		void operator()(const node::statementDeclaration& stmt_dec){
-			//TODO add functionality
+			//check first if variable already declared and only declare it if not
+			if (gen->m_vars.contains(stmt_dec.ident.value.value())){
+				std::cerr << "Identifier already declared: " << stmt_dec.ident.value.value() << std::endl;
+				exit(EXIT_FAILURE);
+			}
+			gen->m_vars.insert({stmt_dec.ident.value.value(), Var {.stack_location = gen->m_stack_size}});
+			gen->gen_expr(stmt_dec.expression);
 		}
 	};
 	StmtVisitor visitor{.gen = this};
