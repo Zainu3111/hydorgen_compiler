@@ -17,6 +17,20 @@ namespace node {
 		std::variant<exprIntLit, exprIdent> var;
 	};
 
+	struct binExprAdd{
+		expr left;
+		expr right;
+	};
+
+	struct binExprMult{
+		expr left;
+		expr right;
+	};
+
+	struct binExpr{
+		std::variant<binExprAdd, binExprMult> var;
+	};
+
 	struct statementReturn{
 		expr expression;
 	};
