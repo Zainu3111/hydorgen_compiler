@@ -6,13 +6,13 @@
 #include <optional>
 #include <variant>
 #include "node.h"
-
+#include "arena.h"
 
 class Parser{
 public:
 	Parser(std::vector<Token>);
 
-	std::optional<node::expr> parse_expr();
+	std::optional<node::expr*> parse_expr();
 
 	std::optional<node::statementReturn> parse();
 
@@ -32,7 +32,8 @@ private:
 
 	const std::vector<Token> m_tokens;
 	size_t m_ind{};
-	
+	ArenaAllocator m_allocator;
+
 	bool check(TokenType);
 };
 

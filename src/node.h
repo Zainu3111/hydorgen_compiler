@@ -12,36 +12,38 @@ namespace node {
 	struct exprIdent{
 		Token ident;
 	};
+	
+	struct binExpr;
 
 	struct expr{
-		std::variant<exprIntLit, exprIdent> var;
+		std::variant<exprIntLit*, exprIdent*, binExpr*> var;
 	};
 
 	struct binExprAdd{
-		expr left;
-		expr right;
+		expr* left;
+		expr* right;
 	};
 
 	struct binExprMult{
-		expr left;
-		expr right;
+		expr* left;
+		expr* right;
 	};
 
 	struct binExpr{
-		std::variant<binExprAdd, binExprMult> var;
+		std::variant<binExprAdd*, binExprMult*> var;
 	};
 
 	struct statementReturn{
-		expr expression;
+		expr* expression;
 	};
 
 	struct statementDeclaration{
 		Token ident;
-		expr expression;
+		expr* expression;
 	};
 
 	struct statement{
-		std::variant<statementReturn, statementDeclaration> stmt;
+		std::variant<statementReturn*, statementDeclaration*> stmt;
 	};
 
 	struct prog{
