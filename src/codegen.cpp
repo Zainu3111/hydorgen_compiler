@@ -20,30 +20,32 @@ void Generator::pop(const std::string& reg){
 	--m_stack_size;
 }
 
-void Generator::gen_expr(const node::expr& expr){
+void Generator::gen_expr(const node::expr* expr){
 	// declaring inside the function keeps the visitor from polluting the outside scope.
 	struct ExprVisitor {
 		Generator* gen;
 
-		void operator()(const node::exprIntLit& expr_int_lit){
-			gen->m_output << "		li t0, " << expr_int_lit.int_lit.value.value() << "\n";
+		void operator()(const node::exprIntLit* expr_int_lit){
+			gen->m_output << "		li t0, " << expr_int_lit->int_lit.value.value() << "\n";
 			gen->push("t0");
 //			std::cout << "it should work" << std::endl;
 		}
-		void operator()(const node::exprIdent& expr_iden){
-		//TODO	
+		void operator()(const node::exprIdent* expr_iden){
 			if (!gen->m_vars.contains(expr_iden.ident.value.value())){
-				std::cerr << "Variable " << expr_iden.ident.value.value() << " does not exit." << std::endl;
+				std::cerr << "Variable " << expr_iden->ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			int loc = gen->m_stack_size - gen->m_vars.at(expr_iden.ident.value.value()).stack_location;
+			int loc = gen->m_stack_size - gen->m_vars.at(expr_iden->ident.value.value()).stack_location;
 			loc = loc * 8;
 			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
 			gen->push("t0");
 		}
+		void operator()(const node::binExpr* bin_expr){
+			//TODO
+		}
 	};
 	ExprVisitor visitor{.gen = this};
-	std::visit(visitor, expr.var);
+	std::visit(visitor, expr->var);
 }
 
 void Generator::gen_statement(const node::statement& stmt){
@@ -51,21 +53,21 @@ void Generator::gen_statement(const node::statement& stmt){
 	struct StmtVisitor {
 		Generator* gen;
 
-		void operator()(const node::statementReturn& stmt_ret){
-			gen->gen_expr(stmt_ret.expression);
+		void operator()(const node::statementReturn* stmt_ret){
+			gen->gen_expr(stmt_ret->expression);
 			gen->pop("a0");
 			gen->m_output << "		li a7, 1\n";
 			gen->m_output << "		ecall\n";
 		}
 
-		void operator()(const node::statementDeclaration& stmt_dec){
+		void operator()(const node::statementDeclaration* stmt_dec){
 			//check first if variable already declared and only declare it if not
 			if (gen->m_vars.contains(stmt_dec.ident.value.value())){
-				std::cerr << "Identifier already declared: " << stmt_dec.ident.value.value() << std::endl;
+				std::cerr << "Identifier already declared: " << stmt_dec->ident.value.value() << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			gen->m_vars.insert({stmt_dec.ident.value.value(), Var {.stack_location = gen->m_stack_size}});
-			gen->gen_expr(stmt_dec.expression);
+			gen->m_vars.insert({stmt_dec->ident.value.value(), Var {.stack_location = gen->m_stack_size}});
+			gen->gen_expr(stmt_dec->expression);
 		}
 	};
 	StmtVisitor visitor{.gen = this};

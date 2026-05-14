@@ -6,6 +6,8 @@
 #include "node.h"
 #include <sstream>
 #include <unordered_map>
+#include "arena.h"
+
 class Generator{
 	public:
 		Generator(node::prog);
@@ -14,7 +16,7 @@ class Generator{
 
 		void gen_statement (const node::statement&);
 
-		void gen_expr(const node::expr&);
+		void gen_expr(const node::expr*);
 	private:
 
 		void push(const std::string&);
