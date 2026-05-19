@@ -50,9 +50,13 @@ void Generator::gen_expr(const node::expr* expr){
 		void operator()(const node::term* node_term){
 			gen->gen_term(node_term);
 		}
-		void operator()(const node::binExpr* bin_expr){
-			//TODO
-			assert(false);
+		void operator()(const node::binExpr* node_bin_expr){
+			gen->gen_expr(node_bin_expr->add->left);
+			gen->gen_expr(node_bin_expr->add->right);
+			gen->pop("t1");
+			gen->pop("t2");
+			gen->m_output << "		add t3, t1, t2\n";
+			gen->push("t3");
 		}
 	};
 	ExprVisitor visitor{.gen = this};

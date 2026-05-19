@@ -63,7 +63,7 @@ std::optional<node::expr*> Parser::parse_expr(){
 					lhs->var = node_term.value();
 					node_bin_expr_plus->left = lhs;
 					node_bin_expr_plus->right = rhs.value();
-					node_bin_expr->var = node_bin_expr_plus;
+					node_bin_expr->add = node_bin_expr_plus;
 					node_expr->var = node_bin_expr;
 					return node_expr;
 				} else {
