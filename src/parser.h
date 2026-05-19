@@ -16,11 +16,13 @@ public:
 
 	std::optional<node::statementReturn> parse();
 
+	std::optional<node::term*> parse_term();
 
 	std::optional<node::statement> parse_statement();
 
 	std::optional<node::prog> parse_prog();
 
+	std::optional<node::binExpr*> parse_bin_expr();
 private:
 
 	// consume returns a char at index i and increment it

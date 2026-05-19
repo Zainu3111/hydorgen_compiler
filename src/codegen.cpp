@@ -31,7 +31,7 @@ void Generator::gen_expr(const node::expr* expr){
 //			std::cout << "it should work" << std::endl;
 		}
 		void operator()(const node::exprIdent* expr_iden){
-			if (!gen->m_vars.contains(expr_iden.ident.value.value())){
+			if (!gen->m_vars.contains(expr_iden->ident.value.value())){
 				std::cerr << "Variable " << expr_iden->ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
@@ -42,6 +42,8 @@ void Generator::gen_expr(const node::expr* expr){
 		}
 		void operator()(const node::binExpr* bin_expr){
 			//TODO
+			std::cout << "Working" << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	};
 	ExprVisitor visitor{.gen = this};
@@ -62,7 +64,7 @@ void Generator::gen_statement(const node::statement& stmt){
 
 		void operator()(const node::statementDeclaration* stmt_dec){
 			//check first if variable already declared and only declare it if not
-			if (gen->m_vars.contains(stmt_dec.ident.value.value())){
+			if (gen->m_vars.contains(stmt_dec->ident.value.value())){
 				std::cerr << "Identifier already declared: " << stmt_dec->ident.value.value() << std::endl;
 				exit(EXIT_FAILURE);
 			}

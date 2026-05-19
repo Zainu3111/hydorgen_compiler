@@ -41,11 +41,9 @@ int main(int argc, char* argv[]){
 	Tokenizer tokenizer = Tokenizer(source);
 	std::vector<Token> tokens = tokenizer.tokenize();
 	
-	//std::cout << "checking" << std::endl;
-	// tokens is now a vector of tokens
-	
+	// tokens is now a vector of tokens	
 	Parser parser(tokens);
-	std::cout << "trying" << std::endl;
+	
 	std::optional<node::prog> tree = parser.parse_prog();
 	if (!tree.has_value()){
 		std::cerr << "No Statement Found" << std::endl;

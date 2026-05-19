@@ -15,7 +15,9 @@ enum class TokenType {
 	close_paren,
 	ident,
 	eq,
-	_int
+	_int,
+	plus,
+	mult
 };
 
 // Token, what is the type and val of the token

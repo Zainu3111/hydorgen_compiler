@@ -5,18 +5,22 @@
 #include <variant>
 
 namespace node {
-	struct exprIntLit{
+	struct termIntLit{
 		Token int_lit;
 	};
 
-	struct exprIdent{
+	struct termIdent{
 		Token ident;
 	};
 	
 	struct binExpr;
 
+	struct term{
+		std::variant<termIntLit*, termIdent*> var;
+	};
+
 	struct expr{
-		std::variant<exprIntLit*, exprIdent*, binExpr*> var;
+		std::variant<term*, binExpr*> var;
 	};
 
 	struct binExprAdd{

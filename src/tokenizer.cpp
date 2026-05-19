@@ -38,6 +38,12 @@ std::vector<Token> Tokenizer::tokenize(){
 		}else if(peek().value() == '='){
 			consume();
 			tokens.push_back({.type = TokenType::eq});
+		}else if(peek().value() == '+'){
+			consume();
+			tokens.push_back({.type = TokenType::plus});
+		}else if(peek().value() == '*'){
+			consume();
+			tokens.push_back({.type = TokenType::mult});
 		}else if(peek().value() == '('){
 			consume();
 			tokens.push_back({.type = TokenType::open_paren});
