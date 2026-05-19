@@ -22,7 +22,6 @@ public:
 
 	std::optional<node::prog> parse_prog();
 
-	std::optional<node::binExpr*> parse_bin_expr();
 private:
 
 	// consume returns a char at index i and increment it

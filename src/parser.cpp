@@ -28,29 +28,6 @@ std::optional<node::term*> Parser::parse_term(){
 	}
 }
 
-std::optional<node::binExpr*> Parser::parse_bin_expr(){
-	if(auto lhs = parse_expr()){
-		auto bin_expr = m_allocator.alloc<node::binExpr>();
-		if(check(TokenType::plus)){
-			auto bin_expr_plus = m_allocator.alloc<node::binExprAdd>();
-			consume();
-			if(auto rhs = parse_expr()){
-				bin_expr_plus->left = lhs.value();
-				bin_expr_plus->right = rhs.value();
-				bin_expr->var = bin_expr_plus;
-				return bin_expr;
-			} else {
-				std::cerr << "Not a valid Binary Expression" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-		}else{
-			std::cerr << "Unsupported Operator" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-	}else{
-		return {};
-	}
-}
 
 bool Parser::check(TokenType type){
 	return peek().has_value() && peek().value().type == type;
@@ -94,6 +71,7 @@ std::optional<node::expr*> Parser::parse_expr(){
 					exit(EXIT_FAILURE);
 				}
 			}else if(check(TokenType::mult)){
+				//TODO add multiplication parsing;
 				return {};
 			}else{
 				std::cerr << "Unsupported Operator" << std::endl;

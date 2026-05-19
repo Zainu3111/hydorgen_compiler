@@ -17,6 +17,8 @@ class Generator{
 		void gen_statement (const node::statement&);
 
 		void gen_expr(const node::expr*);
+		
+		void gen_term(const node::term*);
 	private:
 
 		void push(const std::string&);

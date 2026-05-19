@@ -1,6 +1,7 @@
 #include "codegen.h"
 #include <string>
 #include <sstream>
+#include <assert.h>
 
 Generator::Generator(node::prog prog)
 	: m_prog(std::move(prog))
@@ -20,30 +21,38 @@ void Generator::pop(const std::string& reg){
 	--m_stack_size;
 }
 
+void Generator::gen_term(const node::term* node_term){
+	struct TermVisitor{
+		Generator* gen;
+		void operator()(const node::termIntLit* term_int_lit){
+			gen->m_output << "		li t0, " << term_int_lit->int_lit.value.value() << "\n";
+			gen->push("t0");
+		}
+		void operator()(const node::termIdent* term_ident){
+			if (!gen->m_vars.contains(term_ident->ident.value.value())){
+				std::cerr << "Variable " << term_ident->ident.value.value() << " does not exit." << std::endl;
+				exit(EXIT_FAILURE);
+			}
+			int loc = gen->m_stack_size - gen->m_vars.at(term_ident->ident.value.value()).stack_location;
+			loc = loc * 8;
+			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
+		}
+	};
+	TermVisitor visitor({.gen = this});
+	std::visit(visitor, node_term->var);
+}
+
 void Generator::gen_expr(const node::expr* expr){
 	// declaring inside the function keeps the visitor from polluting the outside scope.
 	struct ExprVisitor {
 		Generator* gen;
 
-		void operator()(const node::exprIntLit* expr_int_lit){
-			gen->m_output << "		li t0, " << expr_int_lit->int_lit.value.value() << "\n";
-			gen->push("t0");
-//			std::cout << "it should work" << std::endl;
-		}
-		void operator()(const node::exprIdent* expr_iden){
-			if (!gen->m_vars.contains(expr_iden->ident.value.value())){
-				std::cerr << "Variable " << expr_iden->ident.value.value() << " does not exit." << std::endl;
-				exit(EXIT_FAILURE);
-			}
-			int loc = gen->m_stack_size - gen->m_vars.at(expr_iden->ident.value.value()).stack_location;
-			loc = loc * 8;
-			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
-			gen->push("t0");
+		void operator()(const node::term* node_term){
+			gen->gen_term(node_term);
 		}
 		void operator()(const node::binExpr* bin_expr){
 			//TODO
-			std::cout << "Working" << std::endl;
-			exit(EXIT_FAILURE);
+			assert(false);
 		}
 	};
 	ExprVisitor visitor{.gen = this};
