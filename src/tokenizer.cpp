@@ -56,6 +56,12 @@ std::vector<Token> Tokenizer::tokenize(){
 		}else if(peek().value() == '*'){
 			consume();
 			tokens.push_back({.type = TokenType::mult});
+		}else if(peek().value() == '-'){
+			consume();
+			tokens.push_back({.type = TokenType::sub});
+		}else if(peek().value() == '/'){
+			consume();
+			tokens.push_back({.type = TokenType::div});
 		}else if(peek().value() == '('){
 			consume();
 			tokens.push_back({.type = TokenType::open_paren});

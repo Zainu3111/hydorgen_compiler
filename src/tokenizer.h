@@ -17,7 +17,9 @@ enum class TokenType {
 	eq,
 	_int,
 	plus,
-	mult
+	mult,
+	sub,
+	div
 };
 
 // Token, what is the type and val of the token

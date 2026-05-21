@@ -1,0 +1,2 @@
+int x = 4 * 2 * 5;
+return x;
