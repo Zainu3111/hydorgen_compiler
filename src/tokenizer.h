@@ -33,7 +33,7 @@ public:
 	// tokenize is a function that is used to tokenize a src string
 	std::vector<Token> tokenize();
 
-
+	//bool is_bin_op(TokenType);
 private:
 	// m_src is the line of code being tokenized
 	const std::string_view m_src;
@@ -49,5 +49,6 @@ private:
 	char consume();
 };
 
+std::optional<int> bin_prec(TokenType);
 
 #endif

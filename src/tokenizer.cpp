@@ -7,6 +7,18 @@ Tokenizer::Tokenizer(std::string_view s)
 	  m_ind(0)
 {}
 
+
+std::optional<int> bin_prec(TokenType type){
+	switch (type) {
+		case TokenType::plus:
+			return 1;
+		case TokenType::mult:
+			return 2;
+		default:
+			return {};
+	}	
+}
+
 std::vector<Token> Tokenizer::tokenize(){
 	std::vector<Token> tokens;
 	std::string buf;

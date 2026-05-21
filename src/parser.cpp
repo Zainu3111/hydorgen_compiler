@@ -2,6 +2,7 @@
 #include "parser.h"
 #include <optional>
 #include "node.h"
+#include "tokenizer.h"
 
 Parser::Parser(std::vector<Token> tokens)
 	: m_tokens(std::move(tokens))
@@ -45,43 +46,55 @@ Token Parser::consume(){
 	return m_tokens[m_ind++];
 }
 
-std::optional<node::expr*> Parser::parse_expr(){	
-	if(auto node_term = parse_term()){
-		if(check(TokenType::semi)){
-			auto node_expr = m_allocator.alloc<node::expr>();
-			node_expr->var = node_term.value();
-			return node_expr;
-		}else{
-			if(check(TokenType::plus)){
-				consume();
-				if(auto rhs = parse_expr()){
-					auto node_bin_expr = m_allocator.alloc<node::binExpr>();
-					auto node_bin_expr_plus = m_allocator.alloc<node::binExprAdd>();
-					auto lhs = m_allocator.alloc<node::expr>();
-					auto node_expr = m_allocator.alloc<node::expr>();
-					
-					lhs->var = node_term.value();
-					node_bin_expr_plus->left = lhs;
-					node_bin_expr_plus->right = rhs.value();
-					node_bin_expr->add = node_bin_expr_plus;
-					node_expr->var = node_bin_expr;
-					return node_expr;
-				} else {
-					std::cerr << "Not a valid Binary Expression" << std::endl;
-					exit(EXIT_FAILURE);
-				}
-			}else if(check(TokenType::mult)){
-				//TODO add multiplication parsing;
-				return {};
-			}else{
-				std::cerr << "Unsupported Operator" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-	else{
+std::optional<node::expr*> Parser::parse_expr(int min_prec = 0){
+	std::optional<node::term*> lhs = parse_term();
+	if (!lhs.has_value()){
 		return {};
-}
+	}
+	auto expr_lhs = m_allocator.alloc<node::expr>(); 
+	expr_lhs->var = lhs.value();
+
+	while(1){
+		std::optional<Token> cur_token = peek();
+		std::optional<int> prec;
+		if(cur_token.has_value()){
+			prec = bin_prec(cur_token->type);
+			if (!prec.has_value() || prec.value() < min_prec){
+				break;
+			}
+		}else{
+			break;
+		}
+		Token op = consume();
+		int next_min_prec = prec.value() + 1;
+		auto expr_rhs = parse_expr(next_min_prec);
+		if(!expr_rhs.has_value()){
+			std::cerr << "Bin op needs one more arg" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		auto expr = m_allocator.alloc<node::binExpr>();
+		if(op.type == TokenType::plus){
+			auto expr_add = m_allocator.alloc<node::binExprAdd>();
+			auto expr_lhs2 = m_allocator.alloc<node::expr>();
+			expr_lhs2->var = expr_lhs->var;
+			expr_add->left = expr_lhs2;
+			expr_add->right = expr_rhs.value();
+			expr->var = expr_add;
+		}else if (op.type == TokenType::mult){
+			auto expr_mult = m_allocator.alloc<node::binExprMult>();
+			auto expr_lhs2 = m_allocator.alloc<node::expr>();
+			expr_lhs2->var = expr_lhs->var;
+			expr_mult->left = expr_lhs2;
+			expr_mult->right = expr_rhs.value();
+			expr->var = expr_mult;
+		}else{
+			std::cerr << "Not a valid op" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		expr_lhs->var = expr;
+	}
+	return expr_lhs;
+
 }
 
 std::optional<node::statement> Parser::parse_statement(){
