@@ -24,6 +24,22 @@ std::optional<node::term*> Parser::parse_term(){
 		node_term_ident->ident = consume();
 		node_term->var = node_term_ident;
 		return node_term;
+	}else if(check(TokenType::open_paren)){
+		consume();
+		auto expr = parse_expr();
+		if(!expr.has_value()){
+			std::cerr << "Expected expression." << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		if(!check(TokenType::close_paren)){
+			std::cerr << "Expected Close Paranthesis" << std::endl;
+		}
+		consume();
+		auto term = m_allocator.alloc<node::term>();
+		auto term_paren = m_allocator.alloc<node::termParen>();
+		term_paren->expression = expr.value();
+		term->var = term_paren;
+		return term;
 	}else{
 		return {};
 	}
@@ -46,7 +62,7 @@ Token Parser::consume(){
 	return m_tokens[m_ind++];
 }
 
-std::optional<node::expr*> Parser::parse_expr(int min_prec = 0){
+std::optional<node::expr*> Parser::parse_expr(int min_prec){
 	std::optional<node::term*> lhs = parse_term();
 	if (!lhs.has_value()){
 		return {};

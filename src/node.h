@@ -12,15 +12,21 @@ namespace node {
 	struct termIdent{
 		Token ident;
 	};
-	
+
 	struct binExpr;
 
+	struct termParen;
+
 	struct term{
-		std::variant<termIntLit*, termIdent*> var;
+		std::variant<termIntLit*, termIdent*, termParen*> var;
 	};
 
 	struct expr{
 		std::variant<term*, binExpr*> var;
+	};
+
+	struct termParen{
+		expr* expression;
 	};
 
 	struct binExprAdd{

@@ -12,7 +12,7 @@ class Parser{
 public:
 	Parser(std::vector<Token>);
 
-	std::optional<node::expr*> parse_expr(int);
+	std::optional<node::expr*> parse_expr(int min_prec = 0);
 
 	std::optional<node::statementReturn> parse();
 

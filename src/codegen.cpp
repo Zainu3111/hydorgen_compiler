@@ -37,6 +37,9 @@ void Generator::gen_term(const node::term* node_term){
 			loc = loc * 8;
 			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
 		}
+		void operator()(const node::termParen* term_paren){
+			gen->gen_expr(term_paren->expression);
+		}
 	};
 	TermVisitor visitor({.gen = this});
 	std::visit(visitor, node_term->var);
