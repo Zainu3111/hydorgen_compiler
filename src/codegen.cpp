@@ -42,8 +42,37 @@ void Generator::gen_term(const node::term* node_term){
 	std::visit(visitor, node_term->var);
 }
 
+
+void Generator::gen_bin_expr(const node::binExpr* bin_expr){
+	struct BinExprVisitor{
+		Generator* gen;
+
+		void operator()(const node::binExprAdd* bin_expr_add){
+			gen->gen_expr(bin_expr_add->left);
+			gen->gen_expr(bin_expr_add->right);
+			gen->pop("t1");
+			gen->pop("t2");
+			gen->m_output << "		add t3, t1, t2\n";
+			gen->push("t3");
+		}
+		void operator()(const node::binExprMult* bin_expr_mult){
+			gen->gen_expr(bin_expr_mult->left);
+			gen->gen_expr(bin_expr_mult->right);
+			gen->pop("t1");
+			gen->pop("t2");
+			gen->m_output << "		mul t3, t1, t2\n";
+			gen->push("t3");
+
+		}
+	};
+	BinExprVisitor visitor{.gen = this};
+	std::visit(visitor, bin_expr->var);
+}
+
+
+
 void Generator::gen_expr(const node::expr* expr){
-	// declaring inside the function keeps the visitor from polluting the outside scope.
+	// declaring inside the function keeps the visiitor from polluting the outside scope.
 	struct ExprVisitor {
 		Generator* gen;
 
@@ -51,12 +80,7 @@ void Generator::gen_expr(const node::expr* expr){
 			gen->gen_term(node_term);
 		}
 		void operator()(const node::binExpr* node_bin_expr){
-			gen->gen_expr(node_bin_expr->add->left);
-			gen->gen_expr(node_bin_expr->add->right);
-			gen->pop("t1");
-			gen->pop("t2");
-			gen->m_output << "		add t3, t1, t2\n";
-			gen->push("t3");
+			gen->gen_bin_expr(node_bin_expr);
 		}
 	};
 	ExprVisitor visitor{.gen = this};
