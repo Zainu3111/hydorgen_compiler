@@ -46,7 +46,23 @@ void Generator::gen_term(const node::term* node_term){
 void Generator::gen_bin_expr(const node::binExpr* bin_expr){
 	struct BinExprVisitor{
 		Generator* gen;
-
+		
+		void operator()(const node::binExprSub* bin_expr_sub){
+			gen->gen_expr(bin_expr_sub->left);
+			gen->gen_expr(bin_expr_sub->right);
+			gen->pop("t2");
+			gen->pop("t1");
+			gen->m_output << "		sub t3, t1, t2\n";
+			gen->push("t3");
+		}
+		void operator()(const node::binExprDiv* bin_expr_div){
+			gen->gen_expr(bin_expr_div->left);
+			gen->gen_expr(bin_expr_div->right);
+			gen->pop("t2");
+			gen->pop("t1");
+			gen->m_output << "		div t3, t1, t2\n";
+			gen->push("t3");
+		}
 		void operator()(const node::binExprAdd* bin_expr_add){
 			gen->gen_expr(bin_expr_add->left);
 			gen->gen_expr(bin_expr_add->right);

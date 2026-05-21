@@ -33,8 +33,18 @@ namespace node {
 		expr* right;
 	};
 
+	struct binExprSub{
+		expr* left;
+		expr* right;
+	};
+	
+	struct binExprDiv{
+		expr* left;
+		expr* right;
+	};
+
 	struct binExpr{
-		std::variant<binExprAdd*, binExprMult*> var;
+		std::variant<binExprAdd*, binExprMult*, binExprSub*, binExprDiv*> var;
 	};
 
 	struct statementReturn{

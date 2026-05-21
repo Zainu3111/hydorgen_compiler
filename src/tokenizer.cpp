@@ -10,9 +10,11 @@ Tokenizer::Tokenizer(std::string_view s)
 
 std::optional<int> bin_prec(TokenType type){
 	switch (type) {
+		case TokenType::sub:
 		case TokenType::plus:
-			return 1;
+			return 0;
 		case TokenType::mult:
+		case TokenType::div:
 			return 2;
 		default:
 			return {};

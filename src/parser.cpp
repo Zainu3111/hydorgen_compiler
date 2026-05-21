@@ -87,6 +87,20 @@ std::optional<node::expr*> Parser::parse_expr(int min_prec = 0){
 			expr_mult->left = expr_lhs2;
 			expr_mult->right = expr_rhs.value();
 			expr->var = expr_mult;
+		}else if (op.type == TokenType::sub){
+			auto expr_sub = m_allocator.alloc<node::binExprSub>();
+			auto expr_lhs2 = m_allocator.alloc<node::expr>();
+			expr_lhs2->var = expr_lhs->var;
+			expr_sub->left = expr_lhs2;
+			expr_sub->right = expr_rhs.value();
+			expr->var = expr_sub;
+		}else if (op.type == TokenType::div){
+			auto expr_div = m_allocator.alloc<node::binExprDiv>();
+			auto expr_lhs2 = m_allocator.alloc<node::expr>();
+			expr_lhs2->var = expr_lhs->var;
+			expr_div->left = expr_lhs2;
+			expr_div->right = expr_rhs.value();
+			expr->var = expr_div;
 		}else{
 			std::cerr << "Not a valid op" << std::endl;
 			exit(EXIT_FAILURE);
