@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "node.h"
 #include <sstream>
-#include <unordered_map>
+#include <map>
 #include "arena.h"
 
 class Generator{
@@ -34,7 +34,7 @@ class Generator{
 		const node::prog m_prog;
 		std::stringstream m_output;
 		size_t m_stack_size = 0;
-		std::unordered_map<std::string, Var> m_vars {};
+		std::map<std::string, Var> m_vars {};
 
 };
 

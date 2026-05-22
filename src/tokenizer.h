@@ -19,7 +19,9 @@ enum class TokenType {
 	plus,
 	mult,
 	sub,
-	div
+	div,
+	open_curly,
+	close_curly
 };
 
 // Token, what is the type and val of the token

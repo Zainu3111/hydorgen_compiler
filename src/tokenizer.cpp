@@ -70,6 +70,12 @@ std::vector<Token> Tokenizer::tokenize(){
 		}else if(peek().value() == ')'){
 			consume();
 			tokens.push_back({.type = TokenType::close_paren});
+		}else if(peek().value() == '{'){
+			consume();
+			tokens.push_back({.type = TokenType::open_curly});
+		}else if(peek().value() == '}'){
+			consume();
+			tokens.push_back({.type = TokenType::close_curly});
 		}else if(peek().value() == ';'){
 			consume();
 			tokens.push_back({.type = TokenType::semi});
