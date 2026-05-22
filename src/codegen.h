@@ -1,5 +1,6 @@
-#ifndef HYDROGEN_CODEGEN_H
-#define HYDROGEN_CODEGEN_H
+#pragma once
+//#ifndef HYDROGEN_CODEGEN_H
+//#define HYDROGEN_CODEGEN_H
 
 #include <iostream>
 #include "parser.h"
@@ -38,4 +39,4 @@ class Generator{
 
 };
 
-#endif
+//#endif

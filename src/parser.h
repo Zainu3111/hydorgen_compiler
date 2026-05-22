@@ -27,7 +27,8 @@ private:
 	// consume returns a char at index i and increment it
 	Token consume();
 
-	// peek is to check if there is another char and what is it, [[nodiscard]] so we 
+	// peek is to check if there is another char and what is it, 
+	// [[nodiscard]] so we 
 	// can get an error in case we accidentally call it and not use it
 	[[nodiscard]] std::optional<Token> peek(size_t offset = 0) const;
 

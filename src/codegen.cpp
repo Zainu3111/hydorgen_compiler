@@ -127,6 +127,9 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->m_vars.insert({stmt_dec->ident.value.value(), Var {.stack_location = gen->m_stack_size}});
 			gen->gen_expr(stmt_dec->expression);
 		}
+		void operator()(const node::statementScope* stmt){
+			
+		}
 	};
 	StmtVisitor visitor{.gen = this};
 	std::visit(visitor, stmt.stmt);
