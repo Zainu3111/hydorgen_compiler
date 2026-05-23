@@ -1,12 +1,10 @@
-#pragma once
-//#ifndef HYDROGEN_CODEGEN_H
-//#define HYDROGEN_CODEGEN_H
+#ifndef HYDROGEN_CODEGEN_H
+#define HYDROGEN_CODEGEN_H
 
 #include <iostream>
 #include "parser.h"
 #include "node.h"
 #include <sstream>
-#include <map>
 #include "arena.h"
 
 class Generator{
@@ -29,14 +27,14 @@ class Generator{
 		void pop(const std::string&);
 
 		struct Var{
+			std::string name;
 			size_t stack_location;
 		};
 
 		const node::prog m_prog;
 		std::stringstream m_output;
 		size_t m_stack_size = 0;
-		std::map<std::string, Var> m_vars {};
-
+		std::vector<Var> m_vars;
 };
 
-//#endif
+#endif

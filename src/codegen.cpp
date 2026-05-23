@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <assert.h>
+#include <algorithm>
 
 Generator::Generator(node::prog prog)
 	: m_prog(std::move(prog))
@@ -29,11 +30,15 @@ void Generator::gen_term(const node::term* node_term){
 			gen->push("t0");
 		}
 		void operator()(const node::termIdent* term_ident){
-			if (!gen->m_vars.contains(term_ident->ident.value.value())){
+			auto it = std::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var& var){
+						return var.name == term_ident->ident.value.value();
+					});
+
+			if (it == gen->m_vars.cend()){
 				std::cerr << "Variable " << term_ident->ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			int loc = gen->m_stack_size - gen->m_vars.at(term_ident->ident.value.value()).stack_location;
+			int loc = gen->m_stack_size - it->stack_location;
 			loc = loc * 8;
 			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
 		}
@@ -120,15 +125,17 @@ void Generator::gen_statement(const node::statement& stmt){
 
 		void operator()(const node::statementDeclaration* stmt_dec){
 			//check first if variable already declared and only declare it if not
-			if (gen->m_vars.contains(stmt_dec->ident.value.value())){
+			auto it = std::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var& var){
+						return var.name == stmt_dec->ident.value.value();
+					});
+			if (it != gen->m_vars.cend()){
 				std::cerr << "Identifier already declared: " << stmt_dec->ident.value.value() << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			gen->m_vars.insert({stmt_dec->ident.value.value(), Var {.stack_location = gen->m_stack_size}});
+			gen->m_vars.push_back({.name = stmt_dec->ident.value.value(), .stack_location = gen->m_stack_size});
 			gen->gen_expr(stmt_dec->expression);
 		}
 		void operator()(const node::statementScope* stmt){
-			
 		}
 	};
 	StmtVisitor visitor{.gen = this};
