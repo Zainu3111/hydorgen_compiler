@@ -127,7 +127,7 @@ std::optional<node::expr*> Parser::parse_expr(int min_prec){
 
 }
 
-std::optional<node::statement> Parser::parse_statement(){
+std::optional<node::statement*> Parser::parse_statement(){
 	node::statementReturn stmt_return;
 	if(check(TokenType::_return)){
 		auto stmt_return = m_allocator.alloc<node::statementReturn>();
@@ -146,8 +146,9 @@ std::optional<node::statement> Parser::parse_statement(){
 			std::cerr << "Requires a semi-colon" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-
-		return node::statement{.stmt = stmt_return};
+		auto stmt = m_allocator.alloc<node::statement>();
+		stmt->stmt = stmt_return;
+		return stmt;
 
 	}else if (check(TokenType::_int)){
 		consume();
@@ -178,15 +179,28 @@ std::optional<node::statement> Parser::parse_statement(){
 			std::cerr << "Requires a semi-colon" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-
-		return node::statement{.stmt = stmt_dec};
+		auto stmt = m_allocator.alloc<node::statement>();
+		stmt->stmt = stmt_dec;
+		return stmt;
+	}else if(check(TokenType::open_curly)){
+		consume();
+		auto scope = m_allocator.alloc<node::statementScope>();
+		while(auto stmt = parse_statement()){
+			scope->stmts.push_back(stmt.value());
+		}
+		if(!check(TokenType::close_curly)){
+			std::cerr << "Need a Closing Curly." << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		auto stmt = m_allocator.alloc<node::statement>();
+		stmt->stmt = scope;
+		return stmt;
 	}else{
 		return {};
-}
+	}
 }
 
 std::optional<node::prog> Parser::parse_prog(){
-	//TODO: add functionality
 	node::prog prog;
 	while (peek().has_value()){
 		if (auto stmt = parse_statement()){

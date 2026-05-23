@@ -18,7 +18,7 @@ public:
 
 	std::optional<node::term*> parse_term();
 
-	std::optional<node::statement> parse_statement();
+	std::optional<node::statement*> parse_statement();
 
 	std::optional<node::prog> parse_prog();
 

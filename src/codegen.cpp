@@ -176,8 +176,8 @@ std::string Generator::gen_prog(){
 	
 //	std::cout << "start codegen" << std::endl;
 
-	for(const node::statement stmt : m_prog.stmts){
-		gen_statement(stmt);
+	for(const node::statement* stmt : m_prog.stmts){
+		gen_statement(*stmt);
 //	std::cout << "calling gen_statement" << std::endl;
 	}
 	return m_output.str();

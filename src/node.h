@@ -73,7 +73,7 @@ namespace node {
 	};
 
 	struct prog{
-		std::vector<statement> stmts;
+		std::vector<statement*> stmts;
 	};
 	
 	struct statementScope{
