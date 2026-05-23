@@ -21,6 +21,9 @@ class Generator{
 		
 		void gen_bin_expr(const node::binExpr*);
 	private:
+		void begin_scope();
+
+		void end_scope();
 
 		void push(const std::string&);
 
@@ -34,7 +37,8 @@ class Generator{
 		const node::prog m_prog;
 		std::stringstream m_output;
 		size_t m_stack_size = 0;
-		std::vector<Var> m_vars;
+		std::vector<Var> m_vars {};
+		std::vector<size_t> m_scopes {};
 };
 
 #endif

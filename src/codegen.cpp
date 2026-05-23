@@ -10,6 +10,8 @@ Generator::Generator(node::prog prog)
 
 }
 
+// Start Private Functions
+
 void Generator::push(const std::string& reg){ 
 	m_output << "		sw " << reg << ", 0(sp)\n"; 
 	m_output << "		addi sp, sp, -8\n";
@@ -21,6 +23,22 @@ void Generator::pop(const std::string& reg){
 	m_output << "		lw " << reg << ", 0(sp)\n";
 	--m_stack_size;
 }
+
+void Generator::begin_scope(){
+	m_scopes.push_back(m_vars.size());
+}
+
+void Generator::end_scope(){
+	size_t pop_count = m_vars.size() - m_scopes.back();
+	m_output << "		addi sp, sp, " << pop_count * 8 << "\n";
+	m_stack_size -= pop_count;
+	for(size_t i = 0; i < pop_count; ++i){
+		m_vars.pop_back();
+	}
+	m_scopes.pop_back();
+}
+
+// End Private Functions
 
 void Generator::gen_term(const node::term* node_term){
 	struct TermVisitor{
@@ -135,7 +153,17 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->m_vars.push_back({.name = stmt_dec->ident.value.value(), .stack_location = gen->m_stack_size});
 			gen->gen_expr(stmt_dec->expression);
 		}
-		void operator()(const node::statementScope* stmt){
+		void operator()(const node::statementScope* scope){
+			//We will have 2 funcs, begin and end to start a scope and end a scope. 
+			//Initially it will produce static assembly but later we will be adding
+			//features that save the registers according to calling conventions.
+
+			gen->begin_scope();
+			for(node::statement* stmt : scope->stmts){
+				gen->gen_statement(*stmt);
+			}
+			gen->end_scope();
+
 		}
 	};
 	StmtVisitor visitor{.gen = this};
