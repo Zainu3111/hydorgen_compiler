@@ -1,0 +1,9 @@
+int x = 5;
+int z = 10;
+int a = 15;
+{
+	int	y = 7;
+	int u = 2;
+	int k = 555;
+}
+return y;

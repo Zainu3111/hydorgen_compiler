@@ -12,30 +12,36 @@ Generator::Generator(node::prog prog)
 
 // Start Private Functions
 
-void Generator::push(const std::string& reg){ 
+void Generator::push(const std::string& reg){
+//	m_output << "pushing\n";
 	m_output << "		sw " << reg << ", 0(sp)\n"; 
 	m_output << "		addi sp, sp, -8\n";
 	++m_stack_size;
 }
 
 void Generator::pop(const std::string& reg){
+//	m_output << "popping\n";
 	m_output << "		addi sp, sp, 8\n";
-	m_output << "		lw " << reg << ", 0(sp)\n";
+	m_output << "		lw " << reg << ", 0(sp)\n\n";
 	--m_stack_size;
 }
 
 void Generator::begin_scope(){
+	//std::cout << m_vars.size() << std::endl;
 	m_scopes.push_back(m_vars.size());
 }
 
 void Generator::end_scope(){
 	size_t pop_count = m_vars.size() - m_scopes.back();
+	std::cout << pop_count << std::endl;
+	std::cout << m_stack_size << std::endl;
 	m_output << "		addi sp, sp, " << pop_count * 8 << "\n";
 	m_stack_size -= pop_count;
 	for(size_t i = 0; i < pop_count; ++i){
 		m_vars.pop_back();
 	}
 	m_scopes.pop_back();
+	std::cout << m_stack_size;
 }
 
 // End Private Functions
@@ -56,9 +62,9 @@ void Generator::gen_term(const node::term* node_term){
 				std::cerr << "Variable " << term_ident->ident.value.value() << " does not exit." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			int loc = gen->m_stack_size - it->stack_location;
-			loc = loc * 8;
+			int loc = (gen->m_stack_size - it->stack_location) * 8;
 			gen->m_output << "		lw t0, " << std::to_string(loc) << "(sp)\n";
+			gen->push("t0");
 		}
 		void operator()(const node::termParen* term_paren){
 			gen->gen_expr(term_paren->expression);

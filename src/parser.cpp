@@ -185,13 +185,15 @@ std::optional<node::statement*> Parser::parse_statement(){
 	}else if(check(TokenType::open_curly)){
 		consume();
 		auto scope = m_allocator.alloc<node::statementScope>();
-		while(auto stmt = parse_statement()){
+		while((!check(TokenType::close_curly))){
+			auto stmt = parse_statement();
 			scope->stmts.push_back(stmt.value());
 		}
 		if(!check(TokenType::close_curly)){
 			std::cerr << "Need a Closing Curly." << std::endl;
 			exit(EXIT_FAILURE);
 		}
+		consume();
 		auto stmt = m_allocator.alloc<node::statement>();
 		stmt->stmt = scope;
 		return stmt;
