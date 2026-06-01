@@ -1,0 +1,5 @@
+int x = (10 - 2 * 3) / 2;
+if (x > 1){
+	return 1;
+}
+return 69;
