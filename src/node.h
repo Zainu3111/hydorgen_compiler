@@ -62,13 +62,20 @@ namespace node {
 		expr* expression;
 	};
 
-	struct statementScope;
+	struct scope;
+
+
+	struct statementIf{
+		expr* expression;
+		scope* stmts;
+	};
 
 	struct statement{
 		std::variant<
 			statementReturn*, 
 			statementDeclaration*, 
-			statementScope*>
+			scope*,
+			statementIf*>
 				stmt;
 	};
 
@@ -76,7 +83,7 @@ namespace node {
 		std::vector<statement*> stmts;
 	};
 	
-	struct statementScope{
+	struct scope{
 		std::vector<statement*> stmts;
 	};
 	

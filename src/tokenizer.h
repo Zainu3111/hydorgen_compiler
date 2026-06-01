@@ -18,10 +18,11 @@ enum class TokenType {
 	_int,
 	plus,
 	mult,
-	sub,
+	minus,
 	div,
 	open_curly,
-	close_curly
+	close_curly,
+	_if
 };
 
 // Token, what is the type and val of the token

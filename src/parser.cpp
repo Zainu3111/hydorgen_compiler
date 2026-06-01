@@ -103,7 +103,7 @@ std::optional<node::expr*> Parser::parse_expr(int min_prec){
 			expr_mult->left = expr_lhs2;
 			expr_mult->right = expr_rhs.value();
 			expr->var = expr_mult;
-		}else if (op.type == TokenType::sub){
+		}else if (op.type == TokenType::minus){
 			auto expr_sub = m_allocator.alloc<node::binExprSub>();
 			auto expr_lhs2 = m_allocator.alloc<node::expr>();
 			expr_lhs2->var = expr_lhs->var;
@@ -125,6 +125,24 @@ std::optional<node::expr*> Parser::parse_expr(int min_prec){
 	}
 	return expr_lhs;
 
+}
+
+std::optional<node::scope*> Parser::parse_scope(){
+	if(!check(TokenType::open_curly)){
+		return {};
+	}
+	consume();
+	auto scope = m_allocator.alloc<node::scope>();
+	while((!check(TokenType::close_curly))){
+		auto stmt = parse_statement();
+		scope->stmts.push_back(stmt.value());
+	}
+	if(!check(TokenType::close_curly)){
+		std::cerr << "Need a Closing Curly." << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	consume();
+	return scope;
 }
 
 std::optional<node::statement*> Parser::parse_statement(){
@@ -183,20 +201,35 @@ std::optional<node::statement*> Parser::parse_statement(){
 		stmt->stmt = stmt_dec;
 		return stmt;
 	}else if(check(TokenType::open_curly)){
+		auto scope = parse_scope();
+		auto stmt = m_allocator.alloc<node::statement>();
+		stmt->stmt = scope.value();
+		return stmt;
+	}else if(check(TokenType::_if)){
 		consume();
-		auto scope = m_allocator.alloc<node::statementScope>();
-		while((!check(TokenType::close_curly))){
-			auto stmt = parse_statement();
-			scope->stmts.push_back(stmt.value());
-		}
-		if(!check(TokenType::close_curly)){
-			std::cerr << "Need a Closing Curly." << std::endl;
+		if (check(TokenType::open_paren)){
+			consume();
+			auto stmtIf = m_allocator.alloc<node::statementIf>();
+			if(auto expr = parse_expr()){
+				stmtIf->expression = expr.value();
+			}else{
+				std::cerr << "Invalid If Statement" << std::endl;
+			}
+			consume();
+			if(auto scope = parse_scope()){
+				stmtIf->stmts = scope.value();
+				auto stmt = m_allocator.alloc<node::statement>();
+				stmt->stmt = stmtIf;
+				std::cout << "parsed node_if" << std::endl;
+				return stmt;
+			}else{
+				std::cerr << "Invalid Scopesss" << std::endl;
+				exit(EXIT_FAILURE);
+			}
+		}else{
+			std::cerr << "Expected Open Parantheisis for if statement" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		consume();
-		auto stmt = m_allocator.alloc<node::statement>();
-		stmt->stmt = scope;
-		return stmt;
 	}else{
 		return {};
 	}

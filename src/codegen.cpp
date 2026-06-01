@@ -12,6 +12,12 @@ Generator::Generator(node::prog prog)
 
 // Start Private Functions
 
+std::string Generator::create_label(){
+	std::stringstream ss;
+	ss << "Label" << m_label_count++;
+	return ss.str();
+}
+
 void Generator::push(const std::string& reg){
 //	m_output << "pushing\n";
 	m_output << "		sw " << reg << ", 0(sp)\n"; 
@@ -33,15 +39,12 @@ void Generator::begin_scope(){
 
 void Generator::end_scope(){
 	size_t pop_count = m_vars.size() - m_scopes.back();
-	std::cout << pop_count << std::endl;
-	std::cout << m_stack_size << std::endl;
 	m_output << "		addi sp, sp, " << pop_count * 8 << "\n";
 	m_stack_size -= pop_count;
 	for(size_t i = 0; i < pop_count; ++i){
 		m_vars.pop_back();
 	}
 	m_scopes.pop_back();
-	std::cout << m_stack_size;
 }
 
 // End Private Functions
@@ -135,6 +138,17 @@ void Generator::gen_expr(const node::expr* expr){
 	std::visit(visitor, expr->var);
 }
 
+void Generator::gen_scope(const node::scope* stmt_scope){
+			//We will have 2 funcs, begin and end to start a scope and end a scope. 
+			//Initially it will produce static assembly but later we will be adding
+			//features that save the registers according to calling conventions.
+			begin_scope();
+			for(node::statement* stmt : stmt_scope->stmts){
+				gen_statement(*stmt);
+			}
+			end_scope();
+}
+
 void Generator::gen_statement(const node::statement& stmt){
 	// declaring inside the function keeps the visitor from polluting the outside scope.
 	struct StmtVisitor {
@@ -144,6 +158,8 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->gen_expr(stmt_ret->expression);
 			gen->pop("a0");
 			gen->m_output << "		li a7, 1\n";
+			gen->m_output << "		ecall\n";
+			gen->m_output << "		li a7, 93\n";
 			gen->m_output << "		ecall\n";
 		}
 
@@ -159,17 +175,16 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->m_vars.push_back({.name = stmt_dec->ident.value.value(), .stack_location = gen->m_stack_size});
 			gen->gen_expr(stmt_dec->expression);
 		}
-		void operator()(const node::statementScope* scope){
-			//We will have 2 funcs, begin and end to start a scope and end a scope. 
-			//Initially it will produce static assembly but later we will be adding
-			//features that save the registers according to calling conventions.
-
-			gen->begin_scope();
-			for(node::statement* stmt : scope->stmts){
-				gen->gen_statement(*stmt);
-			}
-			gen->end_scope();
-
+		void operator()(const node::scope* scope){
+			gen->gen_scope(scope);
+		}
+		void operator()(const node::statementIf* stmt_if){
+			gen->gen_expr(stmt_if->expression);
+			gen->pop("t0");
+			std::string label = gen->create_label();
+			gen->m_output << "		beqz t0, " << label << "\n";
+			gen->gen_scope(stmt_if->stmts);
+			gen->m_output << label << ":\n";
 		}
 	};
 	StmtVisitor visitor{.gen = this};

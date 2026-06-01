@@ -1,5 +1,7 @@
-int x = (10 - 2 * 3) / 2;
-if (x > 1){
+int x = 2;
+if (x - 2)
+{
+	int y = 5;
 	return 1;
 }
 return 69;

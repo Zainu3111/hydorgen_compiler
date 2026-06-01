@@ -10,7 +10,7 @@ Tokenizer::Tokenizer(std::string_view s)
 
 std::optional<int> bin_prec(TokenType type){
 	switch (type) {
-		case TokenType::sub:
+		case TokenType::minus:
 		case TokenType::plus:
 			return 0;
 		case TokenType::mult:
@@ -37,6 +37,9 @@ std::vector<Token> Tokenizer::tokenize(){
 			}else if(buf == "int"){
 				tokens.push_back({.type = TokenType::_int});
 				buf.clear();
+			}else if(buf == "if"){
+				tokens.push_back({.type = TokenType::_if});
+				buf.clear();
 			}else{
 			tokens.push_back({.type = TokenType::ident, .value = buf});
 			buf.clear();
@@ -60,7 +63,7 @@ std::vector<Token> Tokenizer::tokenize(){
 			tokens.push_back({.type = TokenType::mult});
 		}else if(peek().value() == '-'){
 			consume();
-			tokens.push_back({.type = TokenType::sub});
+			tokens.push_back({.type = TokenType::minus});
 		}else if(peek().value() == '/'){
 			consume();
 			tokens.push_back({.type = TokenType::div});

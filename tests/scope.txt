@@ -6,4 +6,4 @@ int a = 15;
 	int u = 2;
 	int k = 555;
 }
-return y;
+return x;

@@ -20,7 +20,11 @@ class Generator{
 		void gen_term(const node::term*);
 		
 		void gen_bin_expr(const node::binExpr*);
+
+		void gen_scope(const node::scope*);
 	private:
+		std::string create_label();
+
 		void begin_scope();
 
 		void end_scope();
@@ -34,11 +38,13 @@ class Generator{
 			size_t stack_location;
 		};
 
+		//fields in my Generator
 		const node::prog m_prog;
 		std::stringstream m_output;
 		size_t m_stack_size = 0;
 		std::vector<Var> m_vars {};
 		std::vector<size_t> m_scopes {};
+		int m_label_count = 0;
 };
 
 #endif

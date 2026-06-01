@@ -22,6 +22,7 @@ public:
 
 	std::optional<node::prog> parse_prog();
 
+	std::optional<node::scope*> parse_scope();
 private:
 
 	// consume returns a char at index i and increment it
