@@ -22,7 +22,8 @@ enum class TokenType {
 	div,
 	open_curly,
 	close_curly,
-	_if
+	_if,
+	_else
 };
 
 // Token, what is the type and val of the token

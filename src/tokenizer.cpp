@@ -40,6 +40,9 @@ std::vector<Token> Tokenizer::tokenize(){
 			}else if(buf == "if"){
 				tokens.push_back({.type = TokenType::_if});
 				buf.clear();
+			}else if(buf == "else"){
+				tokens.push_back({.type = TokenType::_else});
+				buf.clear();
 			}else{
 			tokens.push_back({.type = TokenType::ident, .value = buf});
 			buf.clear();
