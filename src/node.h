@@ -50,7 +50,12 @@ namespace node {
 	};
 
 	struct binExpr{
-		std::variant<binExprAdd*, binExprMult*, binExprSub*, binExprDiv*> var;
+		std::variant<
+			binExprAdd*,
+			binExprMult*,
+			binExprSub*, 
+			binExprDiv*
+			> var;
 	};
 
 	struct statementReturn{

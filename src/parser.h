@@ -23,11 +23,16 @@ public:
 	std::optional<node::prog> parse_prog();
 
 	std::optional<node::scope*> parse_scope();
+
+	std::optional<node::ifPred*> parse_ifPred();
 private:
 
 	// consume returns a char at index i and increment it
 	Token consume();
 
+	Token try_consume(TokenType, std::string);
+
+	bool try_consume(TokenType);
 	// peek is to check if there is another char and what is it, 
 	// [[nodiscard]] so we 
 	// can get an error in case we accidentally call it and not use it

@@ -11,6 +11,24 @@ Parser::Parser(std::vector<Token> tokens)
 	
 }
 
+Token Parser::try_consume(TokenType type, std::string err){
+	if(check(type)){
+		return consume();
+	}else{
+		std::cerr << err << std::endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+bool Parser::try_consume(TokenType type){
+	if(check(type)){
+		consume();
+		return true;
+	}else{
+		return false;
+	}
+}
+
 std::optional<node::term*> Parser::parse_term(){
 	if(check(TokenType::int_lit)){
 		auto node_term = m_allocator.alloc<node::term>();
@@ -145,6 +163,29 @@ std::optional<node::scope*> Parser::parse_scope(){
 	return scope;
 }
 
+std::optional<node::ifPred*> Parser::parse_ifPred(){
+	//check and consume else if
+	if(try_consume(TokenType::_else) && try_consume(TokenType::_if)){
+		//TODO else if parsing
+		auto node_elif = m_allocator.alloc<node::statementElseIf>();
+		try_consume(TokenType::open_paren, "Expected Open Paren (.");
+		if (auto node_expression = parse_expr()){
+			node_elif->expression = node_expression.value();
+		}else{
+			std::cerr << "Expected Expression" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		//check for )
+		try_consume(TokenType::close_paren, "Expected closing Paren");
+	
+	}else if(try_consume(TokenType::_else)){
+		//TODO else parsing
+	}else{
+		return {};
+	}
+}
+
 std::optional<node::statement*> Parser::parse_statement(){
 	node::statementReturn stmt_return;
 	if(check(TokenType::_return)){
@@ -218,6 +259,7 @@ std::optional<node::statement*> Parser::parse_statement(){
 			consume();
 			if(auto scope = parse_scope()){
 				stmtIf->stmts = scope.value();
+				stmtIf->pred = parse_ifPred();
 				auto stmt = m_allocator.alloc<node::statement>();
 				stmt->stmt = stmtIf;
 				std::cout << "parsed node_if" << std::endl;
