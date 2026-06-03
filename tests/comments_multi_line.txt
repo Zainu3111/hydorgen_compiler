@@ -1,5 +1,8 @@
 int x = 2;
-//first
+/*
+first
+Second
+*/
 if (x - 2)
 {
 	int y = 5;
