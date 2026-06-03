@@ -37,7 +37,7 @@ private:
 	size_t m_ind{};
 	ArenaAllocator m_allocator;
 
-	bool check(TokenType);
+	bool check(TokenType, size_t offset = 0);
 };
 
 

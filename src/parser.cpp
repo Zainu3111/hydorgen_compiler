@@ -46,8 +46,8 @@ std::optional<node::term*> Parser::parse_term(){
 }
 
 
-bool Parser::check(TokenType type){
-	return peek().has_value() && peek().value().type == type;
+bool Parser::check(TokenType type, size_t offset){
+	return peek(offset).has_value() && peek(offset).value().type == type;
 }
 
 std::optional<Token> Parser::peek(size_t offset) const{

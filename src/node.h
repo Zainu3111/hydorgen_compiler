@@ -64,10 +64,26 @@ namespace node {
 
 	struct scope;
 
+	struct ifPred;
 
 	struct statementIf{
 		expr* expression;
 		scope* stmts;
+		std::optional<ifPred*> pred;
+	};
+
+	struct statementElseIf{
+		expr* expression;
+		scope* stmts;
+		std::optional<ifPred*> pred;
+	};
+
+	struct statementElse{
+		scope* stmts;
+	};
+
+	struct ifPred{
+		std::variant<statementElseIf, statementElse> var;
 	};
 
 	struct statement{
