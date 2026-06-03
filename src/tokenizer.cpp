@@ -55,6 +55,13 @@ std::vector<Token> Tokenizer::tokenize(){
 		}else if(peek().value() == '='){
 			consume();
 			tokens.push_back({.type = TokenType::eq});
+		}else if(peek().value() == '/' && peek(1).has_value() && peek(1).value() == '/'){
+			while(peek().has_value() && peek().value() != '\n'){
+				consume();
+			}
+			if(peek().has_value() && peek().value() == '\n'){
+				consume();
+			}
 		}else if(peek().value() == '+'){
 			consume();
 			tokens.push_back({.type = TokenType::plus});
