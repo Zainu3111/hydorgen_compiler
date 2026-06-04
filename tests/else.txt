@@ -1,6 +1,6 @@
 int x = 2;
 //first
-if (x - 2)
+if (x)
 {
 	int y = 5;
 	return 1;

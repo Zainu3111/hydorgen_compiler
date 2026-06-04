@@ -181,14 +181,17 @@ void Generator::gen_statement(const node::statement& stmt){
 		void operator()(const node::statementIf* stmt_if){
 			gen->gen_expr(stmt_if->expression);
 			gen->pop("t0");
+			std::string end_label = gen->create_label();
 			std::string label = gen->create_label();
 			gen->m_output << "		beqz t0, " << label << "\n";
 			//gen->m_output << label << ":\n";
 			gen->gen_scope(stmt_if->stmts);
+			gen->m_output << "		j " << end_label << "\n";
 			gen->m_output << label << ":\n";
 			if(stmt_if->pred.has_value()){
-				gen->gen_if_pred(stmt_if->pred.value(), label);
+				gen->gen_if_pred(stmt_if->pred.value(), end_label);
 			}
+			gen->m_output << end_label << ":\n";
 
 		}
 	};
@@ -221,10 +224,12 @@ void Generator::gen_if_pred(const node::ifPred* node_ifPred, std::string& end_la
 			gen->m_output << "		beqz t0, " << label << "\n";
 			gen->gen_scope(elif->stmts);
 			gen->m_output << "		j " << end_label << "\n";
+			
+			gen->m_output << label << ":\n";
 			if (elif->pred.has_value()){
 				gen->gen_if_pred(elif->pred.value(), end_label);
 			}
-			gen->m_output << label << ":\n";
+			//gen->m_output << label << ":\n";
 
 		}
 		void operator()(const node::statementElse* _else){
