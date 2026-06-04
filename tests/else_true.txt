@@ -1,0 +1,11 @@
+int x = 2;
+//first
+if (x - 2)
+{
+	int y = 5;
+	return 1;
+}else if(x-2){
+	return 69;
+}else{
+	return 99;
+}
