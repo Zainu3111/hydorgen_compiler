@@ -88,7 +88,7 @@ namespace node {
 	};
 
 	struct ifPred{
-		std::variant<statementElseIf, statementElse> var;
+		std::variant<statementElseIf*, statementElse*> var;
 	};
 
 	struct statement{

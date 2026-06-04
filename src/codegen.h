@@ -22,6 +22,8 @@ class Generator{
 		void gen_bin_expr(const node::binExpr*);
 
 		void gen_scope(const node::scope*);
+
+		void gen_if_pred(const node::ifPred*, std::string&);
 	private:
 		std::string create_label();
 

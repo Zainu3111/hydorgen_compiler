@@ -183,8 +183,13 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->pop("t0");
 			std::string label = gen->create_label();
 			gen->m_output << "		beqz t0, " << label << "\n";
+			//gen->m_output << label << ":\n";
 			gen->gen_scope(stmt_if->stmts);
 			gen->m_output << label << ":\n";
+			if(stmt_if->pred.has_value()){
+				gen->gen_if_pred(stmt_if->pred.value(), label);
+			}
+
 		}
 	};
 	StmtVisitor visitor{.gen = this};
@@ -203,3 +208,32 @@ std::string Generator::gen_prog(){
 	}
 	return m_output.str();
 }
+
+void Generator::gen_if_pred(const node::ifPred* node_ifPred, std::string& end_label){
+	struct ifPredVisitor{
+			Generator* gen;
+			std::string& end_label;
+
+		void operator()(const node::statementElseIf* elif){
+			gen->gen_expr(elif->expression);
+			gen->pop("t0");
+			std::string label = gen->create_label();
+			gen->m_output << "		beqz t0, " << label << "\n";
+			gen->gen_scope(elif->stmts);
+			gen->m_output << "		j " << end_label << "\n";
+			if (elif->pred.has_value()){
+				gen->gen_if_pred(elif->pred.value(), end_label);
+			}
+			gen->m_output << label << ":\n";
+
+		}
+		void operator()(const node::statementElse* _else){
+			gen->gen_scope(_else->stmts);
+
+		}
+	};
+	ifPredVisitor visitor{.gen = this, .end_label = end_label};
+	std::visit(visitor, node_ifPred->var);
+}
+
+

@@ -168,19 +168,42 @@ std::optional<node::ifPred*> Parser::parse_ifPred(){
 	if(try_consume(TokenType::_else) && try_consume(TokenType::_if)){
 		//TODO else if parsing
 		auto node_elif = m_allocator.alloc<node::statementElseIf>();
+		
+		//start making the expression
 		try_consume(TokenType::open_paren, "Expected Open Paren (.");
-		if (auto node_expression = parse_expr()){
-			node_elif->expression = node_expression.value();
+		if (auto expr = parse_expr()){
+			node_elif->expression = expr.value();
 		}else{
 			std::cerr << "Expected Expression" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 		//check for )
-		try_consume(TokenType::close_paren, "Expected closing Paren");
-	
+		try_consume(TokenType::close_paren, "Expected closing Paren ).");
+		if(auto scope = parse_scope()){
+			node_elif->stmts = scope.value();
+		}else{
+			std::cerr << "Expected Scope." << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		node_elif->pred = parse_ifPred();
+		auto pred = m_allocator.alloc<node::ifPred>();
+		pred->var = node_elif;
+		return pred;
 	}else if(try_consume(TokenType::_else)){
 		//TODO else parsing
+		auto node_else = m_allocator.alloc<node::statementElse>();
+		
+		if(auto scope = parse_scope()){
+			node_else->stmts = scope.value();
+		}else{
+			std::cerr << "Expected Scope." << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		auto pred = m_allocator.alloc<node::ifPred>();
+		pred->var = node_else;
+		return pred;
+
 	}else{
 		return {};
 	}
