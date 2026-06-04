@@ -44,8 +44,8 @@ std::vector<Token> Tokenizer::tokenize(){
 				tokens.push_back({.type = TokenType::_else});
 				buf.clear();
 			}else{
-			tokens.push_back({.type = TokenType::ident, .value = buf});
-			buf.clear();
+				tokens.push_back({.type = TokenType::ident, .value = buf});
+				buf.clear();
 			}
 		}else if (std::isdigit(static_cast<unsigned char>(peek().value()))){
 			 // loop to build a num for val

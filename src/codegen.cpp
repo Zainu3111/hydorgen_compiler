@@ -194,6 +194,19 @@ void Generator::gen_statement(const node::statement& stmt){
 			gen->m_output << end_label << ":\n";
 
 		}
+		void operator()(const node::statementAssignment* stmt_assign){
+			auto it = std::ranges::find_if(gen->m_vars, [&](const Var& var){
+				return var.name == stmt_assign->ident.value.value();
+				});
+			if(it == gen->m_vars.end()){
+				std::cerr << "Variable does not exit" << std::endl;
+				exit(EXIT_FAILURE);
+			}
+			gen->gen_expr(stmt_assign->expression);
+			gen->pop("t0");
+			size_t offset = (gen->m_stack_size - it->stack_location) * 8;
+			gen->m_output << "		sw t0, " << offset << "(sp)\n";
+		}
 	};
 	StmtVisitor visitor{.gen = this};
 	std::visit(visitor, stmt.stmt);

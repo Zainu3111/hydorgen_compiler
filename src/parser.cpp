@@ -232,7 +232,8 @@ std::optional<node::statement*> Parser::parse_statement(){
 		stmt->stmt = stmt_return;
 		return stmt;
 
-	}else if (check(TokenType::_int)){
+	}
+	if (check(TokenType::_int)){
 		consume();
 		auto stmt_dec = m_allocator.alloc<node::statementDeclaration>();
 		if(check(TokenType::ident)){
@@ -264,12 +265,31 @@ std::optional<node::statement*> Parser::parse_statement(){
 		auto stmt = m_allocator.alloc<node::statement>();
 		stmt->stmt = stmt_dec;
 		return stmt;
-	}else if(check(TokenType::open_curly)){
+	}
+	if(check(TokenType::ident) && check(TokenType::eq, 1)){
+		auto node_assgn = m_allocator.alloc<node::statementAssignment>();
+		node_assgn->ident = consume();
+		consume();
+		if(auto expr = parse_expr()){
+			node_assgn->expression = expr.value();
+		}else{
+			std::cerr << "Expected Expression" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		try_consume(TokenType::semi, "Expected ;");
+		auto stmt = m_allocator.alloc<node::statement>();
+		stmt->stmt = node_assgn;
+		return stmt;
+
+	}
+	if(check(TokenType::open_curly)){
 		auto scope = parse_scope();
 		auto stmt = m_allocator.alloc<node::statement>();
 		stmt->stmt = scope.value();
 		return stmt;
-	}else if(check(TokenType::_if)){
+	}
+	if(check(TokenType::_if)){
 		consume();
 		if (check(TokenType::open_paren)){
 			consume();
@@ -295,9 +315,8 @@ std::optional<node::statement*> Parser::parse_statement(){
 			std::cerr << "Expected Open Parantheisis for if statement" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-	}else{
-		return {};
 	}
+	return {};
 }
 
 std::optional<node::prog> Parser::parse_prog(){

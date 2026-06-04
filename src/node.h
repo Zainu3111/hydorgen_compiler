@@ -91,12 +91,18 @@ namespace node {
 		std::variant<statementElseIf*, statementElse*> var;
 	};
 
+	struct statementAssignment{
+		Token ident;
+		expr* expression;
+	};
+
 	struct statement{
 		std::variant<
 			statementReturn*, 
 			statementDeclaration*, 
 			scope*,
-			statementIf*>
+			statementIf*,
+			statementAssignment*>
 				stmt;
 	};
 
