@@ -1,12 +1,11 @@
 int x = 2;
 //first
-if (x)
+if (x - 2)
 {
 	x = 5;
 	return x;
 }else if(x){
 	x = 5 + 7;
-	return x;
 }else{
 	x = 15 * 15;
 }

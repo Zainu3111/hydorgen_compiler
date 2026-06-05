@@ -23,7 +23,7 @@ class Generator{
 
 		void gen_scope(const node::scope*);
 
-		void gen_if_pred(const node::ifPred*, std::string&);
+		void gen_if_pred(const node::ifPred*, const std::string&);
 	private:
 		std::string create_label();
 

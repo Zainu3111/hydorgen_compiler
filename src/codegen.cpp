@@ -192,7 +192,6 @@ void Generator::gen_statement(const node::statement& stmt){
 				gen->gen_if_pred(stmt_if->pred.value(), end_label);
 			}
 			gen->m_output << end_label << ":\n";
-
 		}
 		void operator()(const node::statementAssignment* stmt_assign){
 			auto it = std::ranges::find_if(gen->m_vars, [&](const Var& var){
@@ -225,29 +224,31 @@ std::string Generator::gen_prog(){
 	return m_output.str();
 }
 
-void Generator::gen_if_pred(const node::ifPred* node_ifPred, std::string& end_label){
+void Generator::gen_if_pred(const node::ifPred* node_ifPred,const std::string& end_label){
 	struct ifPredVisitor{
 			Generator* gen;
-			std::string& end_label;
+			const std::string& end_label;
 
 		void operator()(const node::statementElseIf* elif){
+			gen->m_output << "#Evaluating ifpred\n";
 			gen->gen_expr(elif->expression);
 			gen->pop("t0");
 			std::string label = gen->create_label();
 			gen->m_output << "		beqz t0, " << label << "\n";
 			gen->gen_scope(elif->stmts);
 			gen->m_output << "		j " << end_label << "\n";
-			
 			gen->m_output << label << ":\n";
 			if (elif->pred.has_value()){
+				gen->m_output << "#Evaluating elif->ifpred\n";
 				gen->gen_if_pred(elif->pred.value(), end_label);
+			}else{
+				gen->m_output << "#does not have another if pred\n";
 			}
-			//gen->m_output << label << ":\n";
 
 		}
 		void operator()(const node::statementElse* _else){
+			gen->m_output << "#Starting Else\n";
 			gen->gen_scope(_else->stmts);
-
 		}
 	};
 	ifPredVisitor visitor{.gen = this, .end_label = end_label};

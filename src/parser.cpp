@@ -155,18 +155,15 @@ std::optional<node::scope*> Parser::parse_scope(){
 		auto stmt = parse_statement();
 		scope->stmts.push_back(stmt.value());
 	}
-	if(!check(TokenType::close_curly)){
-		std::cerr << "Need a Closing Curly." << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	consume();
+	try_consume(TokenType::close_curly, "Need a Closing Curly.");
 	return scope;
 }
 
 std::optional<node::ifPred*> Parser::parse_ifPred(){
 	//check and consume else if
-	if(try_consume(TokenType::_else) && try_consume(TokenType::_if)){
-		//TODO else if parsing
+	if(check(TokenType::_else) && check(TokenType::_if, 1)){
+		consume();
+		consume();
 		auto node_elif = m_allocator.alloc<node::statementElseIf>();
 		
 		//start making the expression
@@ -192,6 +189,7 @@ std::optional<node::ifPred*> Parser::parse_ifPred(){
 		return pred;
 	}else if(try_consume(TokenType::_else)){
 		//TODO else parsing
+		std::cout << "Parsing else\n";
 		auto node_else = m_allocator.alloc<node::statementElse>();
 		
 		if(auto scope = parse_scope()){
@@ -289,23 +287,21 @@ std::optional<node::statement*> Parser::parse_statement(){
 		stmt->stmt = scope.value();
 		return stmt;
 	}
-	if(check(TokenType::_if)){
-		consume();
-		if (check(TokenType::open_paren)){
-			consume();
+	if(try_consume(TokenType::_if)){
+		if (try_consume(TokenType::open_paren)){
 			auto stmtIf = m_allocator.alloc<node::statementIf>();
 			if(auto expr = parse_expr()){
 				stmtIf->expression = expr.value();
 			}else{
 				std::cerr << "Invalid If Statement" << std::endl;
+				exit(EXIT_FAILURE);
 			}
-			consume();
+			try_consume(TokenType::close_paren, "Expected a closing paren");
 			if(auto scope = parse_scope()){
 				stmtIf->stmts = scope.value();
 				stmtIf->pred = parse_ifPred();
 				auto stmt = m_allocator.alloc<node::statement>();
 				stmt->stmt = stmtIf;
-				std::cout << "parsed node_if" << std::endl;
 				return stmt;
 			}else{
 				std::cerr << "Invalid Scopesss" << std::endl;
